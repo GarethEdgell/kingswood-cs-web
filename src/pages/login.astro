@@ -104,24 +104,27 @@ import Footer from '../components/Footer.astro';
     button.addEventListener('click', async (e) => {
       e.preventDefault();
       console.log('📝 Button clicked');
-
-      errorDiv.classList.add('hidden');
-      errorDiv.textContent = '';
+      errorDiv.textContent = '⏳ Logging in...';
+      errorDiv.classList.remove('hidden');
 
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
       if (!email || !password) {
         errorDiv.textContent = 'Please enter email and password';
-        errorDiv.classList.remove('hidden');
         return;
       }
 
       console.log('📧 Attempting login:', email);
+      errorDiv.textContent = `📧 Attempting login with ${email}...`;
 
       try {
+        console.log('🔄 Calling Supabase auth API...');
+        errorDiv.textContent = '🔄 Verifying credentials...';
+
         const result = await signIn(email, password);
         console.log('✅ Login successful!');
+        errorDiv.textContent = '✅ Login successful! Redirecting...';
 
         if (result.access_token) {
           localStorage.setItem('sb-auth-token', result.access_token);
@@ -129,11 +132,10 @@ import Footer from '../components/Footer.astro';
 
         setTimeout(() => {
           window.location.href = '/dashboard';
-        }, 500);
+        }, 2000);
       } catch (err) {
         console.error('❌ Exception:', err);
-        errorDiv.textContent = err.message || 'An error occurred';
-        errorDiv.classList.remove('hidden');
+        errorDiv.textContent = '❌ ' + (err.message || 'An error occurred');
       }
     });
   }
