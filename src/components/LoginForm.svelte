@@ -17,30 +17,54 @@
 
   async function handleSubmit() {
     console.log('📝 Form submitted');
+    console.log('Email:', email);
+    console.log('Password length:', password.length);
+    console.log('Supabase client:', supabase);
+
     error = '';
     loading = true;
 
+    if (!supabase) {
+      console.error('❌ Supabase client not initialized!');
+      console.log('supabaseUrl:', supabaseUrl);
+      console.log('supabaseAnonKey:', supabaseAnonKey);
+      error = 'Supabase not initialized';
+      loading = false;
+      return;
+    }
+
     try {
       console.log('🔄 Calling supabase.auth.signInWithPassword...');
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      const response = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      console.log('Response - Data:', data, 'Error:', authError);
+      console.log('Full response:', response);
+      console.log('Response - Data:', response.data, 'Error:', response.error);
 
-      if (authError) {
-        console.error('❌ Auth error:', authError.message);
-        error = authError.message;
+      if (response.error) {
+        console.error('❌ Auth error:', response.error.message);
+        error = response.error.message;
+        loading = false;
+        return;
+      }
+
+      if (!response.data?.session) {
+        console.error('❌ No session returned');
+        error = 'Login failed - no session';
         loading = false;
         return;
       }
 
       console.log('✅ Login successful, redirecting...');
-      window.location.href = '/dashboard';
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 500);
     } catch (err) {
       console.error('❌ Exception:', err);
-      error = 'An error occurred. Please try again.';
+      console.error('Error details:', err.message, err.stack);
+      error = err.message || 'An error occurred. Please try again.';
       loading = false;
     }
   }
