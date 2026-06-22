@@ -8,11 +8,15 @@ import { GCSE_NOTES } from '../../data/notes-gcse';
 
 const level = Astro.url.searchParams.get('level') ?? 'gcse';
 const isALevel = level === 'alevel';
+
+// Filter to OCR only
+const ocrGcseNotes = GCSE_NOTES.filter((b: any) => b.id === 'ocr-gcse');
+const ocrALevelNotes = ALEVEL_NOTES.filter((b: any) => b.id === 'ocr');
 ---
 
 <BaseLayout
-  title={isALevel ? 'A Level CS Notes — OCR H446 | Kingswood' : 'GCSE CS Revision Notes — OCR J277 | Kingswood'}
-  description="Structured revision notes for OCR GCSE and A Level Computer Science. Key terms, worked examples, exam tips and common mistakes."
+  title={isALevel ? 'OCR A Level CS Notes (H446) | Kingswood' : 'OCR GCSE CS Notes (J277) | Kingswood'}
+  description="Structured revision notes for OCR Computer Science. Key terms, worked examples, exam tips and common mistakes."
 >
   <Nav />
 
@@ -21,7 +25,7 @@ const isALevel = level === 'alevel';
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 class="text-2xl font-bold text-white">Revision Notes</h1>
-          <p class="mt-1 text-sm text-slate-400">OCR GCSE J277 · OCR A Level H446</p>
+          <p class="mt-1 text-sm text-slate-400">{isALevel ? 'OCR A Level H446' : 'OCR GCSE J277'} — click a spec point in the sidebar to begin</p>
         </div>
         <div class="flex items-center gap-2">
           <div class="flex rounded-xl border border-white/10 bg-black/20 p-1 gap-1">
@@ -42,20 +46,15 @@ const isALevel = level === 'alevel';
           </a>
         </div>
       </div>
-      {isALevel && (
-        <div class="mt-3 text-xs text-slate-500">
-          📖 One page per spec point — use the sidebar to navigate
-        </div>
-      )}
     </div>
   </section>
 
   <section class="px-4 py-8 sm:px-6">
     <div class="mx-auto max-w-7xl">
       {isALevel ? (
-        <NotesALevel client:load notesData={ALEVEL_NOTES} isPro={true} />
+        <NotesALevel client:load notesData={ocrALevelNotes} isPro={true} />
       ) : (
-        <NotesALevel client:load notesData={GCSE_NOTES} isPro={true} />
+        <NotesALevel client:load notesData={ocrGcseNotes} isPro={true} />
       )}
     </div>
   </section>
