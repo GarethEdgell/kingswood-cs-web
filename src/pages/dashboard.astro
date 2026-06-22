@@ -2,17 +2,24 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import { getUser } from '../lib/supabase';
+import { getUser, getProfile } from '../lib/supabase';
 import { COURSES } from '../data/courses';
 
-const { user } = await getUser(Astro.request, Astro.cookies);
+const { user, client: supabase } = await getUser(Astro.request, Astro.cookies);
 
 if (!user) {
   return Astro.redirect('/login');
 }
 
-// Note: In production, get accessible courses from Supabase via API
-// For now, show all courses as a demo
+const profile = await getProfile(user.id, supabase);
+
+// Redirect teachers to their dashboard
+if (profile?.role === 'teacher' || profile?.role === 'admin') {
+  return Astro.redirect('/teacher/digital-futures');
+}
+
+const displayName = profile?.full_name || user.email?.split('@')[0] || 'Student';
+
 const accessibleCourses = COURSES;
 const dfCourses = accessibleCourses.filter(c => c.category === 'Digital Futures');
 const csCourses = accessibleCourses.filter(c => c.category === 'Computer Science');
@@ -26,7 +33,7 @@ const csCourses = accessibleCourses.filter(c => c.category === 'Computer Science
 
   <section class="px-4 py-24 sm:px-6 sm:py-32">
     <div class="mx-auto max-w-6xl">
-      <h1 class="text-5xl font-black text-white mb-4">Welcome back, {user.user_metadata?.full_name || 'Student'}</h1>
+      <h1 class="text-5xl font-black text-white mb-4">Welcome back, {displayName}</h1>
       <p class="text-lg text-slate-400 mb-12">Your accessible courses and progress</p>
 
       <!-- Quick Stats -->

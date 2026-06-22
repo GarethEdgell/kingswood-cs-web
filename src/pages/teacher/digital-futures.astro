@@ -2,51 +2,108 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
-import { getUser } from '../../lib/supabase';
+import { getUser, getProfile } from '../../lib/supabase';
 
-const { user } = await getUser(Astro.request, Astro.cookies);
+const { user, client: supabase } = await getUser(Astro.request, Astro.cookies);
 
-if (!user) {
-  return Astro.redirect('/login');
+if (!user) return Astro.redirect('/login');
+
+const profile = await getProfile(user.id, supabase);
+if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
+  return Astro.redirect('/dashboard');
+}
+
+const displayName = profile?.full_name || user.email?.split('@')[0] || 'Teacher';
+
+// Fetch classes for this teacher
+const { data: classes } = await supabase
+  .from('classes')
+  .select('id, name, code, year_group, description')
+  .eq('teacher_id', user.id)
+  .order('year_group');
+
+// Fetch student counts for each class
+const classIds = (classes ?? []).map((c: any) => c.id);
+const { data: enrollments } = classIds.length > 0
+  ? await supabase.from('class_students').select('class_id').in('class_id', classIds)
+  : { data: [] };
+
+const studentCounts: Record<string, number> = {};
+for (const e of (enrollments ?? [])) {
+  studentCounts[e.class_id] = (studentCounts[e.class_id] ?? 0) + 1;
 }
 ---
 
 <BaseLayout
-  title="Teacher Dashboard — Digital Futures Management"
-  description="Manage your Digital Futures classes, view student progress, and track assignments."
+  title="Teacher Dashboard — Kingswood CS"
+  description="Manage your classes, view student progress, and generate reports."
 >
   <Nav />
 
-  <section class="px-4 py-24 sm:px-6 sm:py-32">
+  <section class="px-4 py-12 sm:px-6 border-b border-white/8">
     <div class="mx-auto max-w-6xl">
-      <h1 class="text-5xl font-black text-white mb-4">🏫 Teacher Dashboard</h1>
-      <p class="text-lg text-slate-400 mb-12">Manage your Digital Futures classes</p>
+      <h1 class="text-4xl font-black text-white mb-1">🏫 Teacher Dashboard</h1>
+      <p class="text-slate-400">Welcome back, {displayName}</p>
+    </div>
+  </section>
 
-      <div class="grid gap-6 sm:grid-cols-2">
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <h3 class="font-bold text-white text-lg mb-4">📋 My Classes</h3>
-          <p class="text-slate-400 mb-4">No classes yet</p>
-          <button class="rounded-lg bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/30 px-4 py-2 text-sm font-semibold">
-            + Create New Class
-          </button>
-        </div>
+  <section class="px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-6xl space-y-10">
 
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <h3 class="font-bold text-white text-lg mb-4">📊 Class Statistics</h3>
-          <p class="text-slate-400">0 students | 0 lessons assigned</p>
-        </div>
+      <!-- My Classes -->
+      <div>
+        <h2 class="text-2xl font-black text-white mb-6">My Classes</h2>
+
+        {(classes ?? []).length === 0 ? (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
+            <p class="text-slate-400 mb-2">No classes found.</p>
+            <p class="text-sm text-slate-500">Contact your admin to set up your classes in Supabase.</p>
+          </div>
+        ) : (
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {(classes ?? []).map((cls: any) => (
+              <a href={`/teacher/digital-futures/class/${cls.id}`}
+                 class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-cyan-500/40 hover:bg-white/8 transition-all group">
+                <div class="flex items-start justify-between mb-3">
+                  <span class="rounded-lg px-2.5 py-1 text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                    Year {cls.year_group}
+                  </span>
+                  <span class="text-xs font-mono text-slate-500">{cls.code}</span>
+                </div>
+                <h3 class="font-bold text-white group-hover:text-cyan-400 transition-colors mb-1">{cls.name}</h3>
+                <p class="text-xs text-slate-500 mb-4">{cls.description}</p>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-slate-400">👥 {studentCounts[cls.id] ?? 0} students</span>
+                  <span class="text-cyan-400 font-semibold">Manage →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div class="mt-12 border-t border-white/8 pt-12">
-        <h2 class="text-2xl font-black text-white mb-6">Resources</h2>
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <a href="/digital-futures" class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-colors">
+      <!-- Quick Links -->
+      <div>
+        <h2 class="text-2xl font-black text-white mb-4">Resources</h2>
+        <div class="grid gap-4 sm:grid-cols-3">
+          <a href="/digital-futures" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition-colors">
             <div class="text-3xl mb-2">✨</div>
             <h3 class="font-bold text-white">Digital Futures Curriculum</h3>
-            <p class="text-sm text-slate-400 mt-1">View all 34 lessons</p>
+            <p class="text-sm text-slate-400 mt-1">Browse all 34 lessons</p>
+          </a>
+          <a href="/revision/ocr-gcse-computer-science" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition-colors">
+            <div class="text-3xl mb-2">📚</div>
+            <h3 class="font-bold text-white">OCR GCSE Resources</h3>
+            <p class="text-sm text-slate-400 mt-1">Questions, notes and flashcards</p>
+          </a>
+          <a href="/revision/ocr-a-level-computer-science" class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition-colors">
+            <div class="text-3xl mb-2">🎓</div>
+            <h3 class="font-bold text-white">OCR A Level Resources</h3>
+            <p class="text-sm text-slate-400 mt-1">Questions, notes and flashcards</p>
           </a>
         </div>
       </div>
+
     </div>
   </section>
 
