@@ -72,25 +72,7 @@ export async function getUser(request: Request, cookies: AstroCookies) {
 }
 
 export async function getProfile(userId: string, _supabaseClient?: any, accessToken?: string) {
-  // Try service role key from both import.meta.env and process.env (Vercel sets both)
-  const serviceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (serviceKey) {
-    try {
-      const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
-      const { data, error } = await admin
-        .from('profiles')
-        .select('full_name, role, subscription_status')
-        .eq('id', userId)
-        .single();
-      if (!error) return data ?? null;
-      console.error('Service role profile fetch error:', error.message);
-    } catch (e) {
-      console.error('Service role client error:', e);
-    }
-  }
-
-  // Fallback: direct REST fetch with user's access token
+  // Use direct REST fetch with the user's access token — works reliably on Vercel
   if (accessToken) {
     try {
       const res = await fetch(
@@ -108,9 +90,8 @@ export async function getProfile(userId: string, _supabaseClient?: any, accessTo
         return rows[0] ?? null;
       }
     } catch (e) {
-      console.error('Direct REST profile fetch error:', e);
+      console.error('Profile fetch error:', e);
     }
   }
-
   return null;
 }
