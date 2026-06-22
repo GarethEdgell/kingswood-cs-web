@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import TuringMachine from '../../components/tools/TuringMachine.svelte';
+
+const faqs = [
+  { q: 'What is a Turing machine?', a: 'A Turing machine is a theoretical model of computation made up of an infinite tape divided into cells, a read/write head that moves along the tape, a finite set of states, and a transition function that determines the next state, symbol to write and direction to move based on the current state and symbol read. It is used to formally define what it means for a problem to be "computable".' },
+  { q: 'What is a transition function in a Turing machine?', a: 'The transition function defines the rules of the machine. For a given current state and the symbol currently under the head, it specifies: the symbol to write to the tape, the direction to move the head (left or right), and the new state to enter. It is often written as a 5-tuple: (current state, read symbol, write symbol, move direction, next state).' },
+  { q: 'What is the difference between a Turing machine and a finite state machine?', a: 'A finite state machine (FSM) has a fixed, finite amount of memory — its current state. A Turing machine has an infinite tape it can read from and write to, giving it unbounded memory. This extra memory means a Turing machine can solve problems an FSM cannot, such as recognising languages like 0ⁿ1ⁿ (equal numbers of 0s followed by equal numbers of 1s) which require counting.' },
+  { q: 'Is a Turing machine assessed at GCSE?', a: 'No. Turing machines are A Level content only — specifically AQA 7517 Section 3.2 (Theory of Computation). At GCSE you are not required to define or trace Turing machines, though basic ideas about algorithms and computability may appear in A Level theory questions.' },
+  { q: 'What does it mean for a problem to be "computable"?', a: 'A problem is computable if a Turing machine can be constructed that solves it for all valid inputs in a finite number of steps. If no such Turing machine exists — as with the Halting Problem — the problem is described as non-computable (or undecidable).' },
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<BaseLayout
+  title="Turing Machine Simulator — AQA A Level Computer Science | CompSci Tutoring"
+  description="Interactive Turing Machine simulator for AQA A Level Computer Science Section 3.2. Define states and transition rules, load an input tape, then step through or run the machine."
+  {schema}
+>
+  <Nav />
+
+  <section class="px-4 pt-12 pb-20 sm:px-6">
+    <div class="mx-auto max-w-6xl">
+
+      <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-wider text-[#6c8cff]">Tools · AQA A Level 3.2</p>
+        <h1 class="mt-1 text-3xl font-extrabold text-white">Turing Machine Simulator</h1>
+        <p class="mt-2 text-slate-400 max-w-3xl">
+          Define states, a transition function and an input tape. Step through execution one move at a time
+          or run to completion. Three built-in examples: 0ⁿ1ⁿ recognition, string copying, and simple accept-all.
+          Covers AQA 7517 Section 3.2 — Theory of Computation.
+        </p>
+      </div>
+
+      <div class="mb-6 rounded-xl border border-[#6c8cff]/20 bg-[#6c8cff]/8 px-5 py-4 text-sm text-slate-300 leading-relaxed">
+        <strong class="text-white">How to use:</strong>
+        Load an example above, or define your own machine.
+        <strong class="text-[#6c8cff]">Load tape</strong> to initialise.
+        <strong class="text-[#6c8cff]">Step →</strong> executes one transition.
+        <strong class="text-[#34d399]">Run all</strong> executes to acceptance/rejection (max 500 steps).
+        The head position is shown by the blue highlighted cell and ▲ marker.
+        Blank cells show □ (the blank symbol B).
+      </div>
+
+      <TuringMachine client:load />
+
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="px-4 py-10 sm:px-6 border-t border-white/8">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-xl font-extrabold text-white mb-6">Frequently asked questions — Turing machines</h2>
+      <div class="divide-y divide-white/8">
+        {faqs.map(faq => (
+          <details class="group py-5">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 list-none">
+              <h3 class="font-semibold text-white text-sm">{faq.q}</h3>
+              <svg class="h-4 w-4 shrink-0 text-slate-500 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <p class="mt-3 text-sm text-slate-400 leading-relaxed">{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Related -->
+  <section class="border-t border-white/8 px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-5">Related resources</h2>
+      <div class="grid gap-3 sm:grid-cols-4">
+        <a href="/tools/fsm" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#6c8cff] transition-colors">FSM Builder</div>
+          <div class="mt-1 text-xs text-slate-500">Finite state machines</div>
+        </a>
+        <a href="/tools/algorithms" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#6c8cff] transition-colors">Algorithm Visualiser</div>
+          <div class="mt-1 text-xs text-slate-500">Sorting, searching & pathfinding</div>
+        </a>
+        <a href="/revision/aqa-a-level-computer-science" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#6c8cff] transition-colors">AQA A Level CS</div>
+          <div class="mt-1 text-xs text-slate-500">Spec 7517 revision</div>
+        </a>
+        <a href="/tutoring" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#6c8cff] transition-colors">1-to-1 Tutoring</div>
+          <div class="mt-1 text-xs text-slate-500">Theory of computation help</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

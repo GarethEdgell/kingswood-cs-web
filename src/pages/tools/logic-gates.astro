@@ -1,0 +1,177 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import LogicGates from '../../components/tools/LogicGates.svelte';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    { '@type': 'Question', name: 'What are logic gates in GCSE Computer Science?', acceptedAnswer: { '@type': 'Answer', text: 'Logic gates are the fundamental building blocks of digital circuits. They take one or two binary inputs (0 or 1) and produce a single binary output according to Boolean logic rules. The gates you need for GCSE Computer Science are: AND, OR, NOT, NAND, NOR and XOR. They are used to build processors, memory circuits and any digital system.' }},
+    { '@type': 'Question', name: 'What is the difference between NAND and NOR gates?', acceptedAnswer: { '@type': 'Answer', text: 'A NAND gate is the inverse of AND — it outputs 1 in every case except when both inputs are 1. A NOR gate is the inverse of OR — it outputs 1 only when both inputs are 0. Both NAND and NOR are described as "universal gates" because any other gate (AND, OR, NOT, XOR) can be built entirely from NAND or entirely from NOR gates.' }},
+    { '@type': 'Question', name: 'Do I need to draw logic gate symbols in the exam?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. AQA, OCR and Cambridge all require students to draw and interpret logic gate symbols. You must know the standard British (BS) symbols. You may also be asked to complete a truth table for a given circuit, or draw a circuit from a Boolean expression.' }},
+    { '@type': 'Question', name: 'What is a truth table?', acceptedAnswer: { '@type': 'Answer', text: 'A truth table lists all possible combinations of input values for a logic gate or circuit, and shows the output for each combination. For a two-input gate (A and B), there are 4 rows (00, 01, 10, 11). For three inputs, there are 8 rows. Truth tables are essential for verifying that a logic circuit behaves correctly.' }},
+  ],
+};
+---
+
+<BaseLayout
+  title="Logic Gate Simulator — AND, OR, NOT, NAND, NOR, XOR | GCSE Computer Science | CompSci Tutoring"
+  description="Interactive logic gate simulator for GCSE and A Level Computer Science. Build AND, OR, NOT, NAND, NOR and XOR circuits. Auto-generated truth tables. Full reference for AQA, OCR and Cambridge."
+  {schema}
+>
+  <Nav />
+
+  <!-- Breadcrumb -->
+  <section class="border-b border-white/8 bg-[var(--bg-card)] px-4 py-3 sm:px-6">
+    <div class="mx-auto max-w-4xl flex items-center gap-2 text-sm text-slate-500">
+      <a href="/tools" class="hover:text-white transition-colors">Tools</a>
+      <span>/</span>
+      <span class="text-slate-300">Logic Gate Simulator</span>
+    </div>
+  </section>
+
+  <!-- Header -->
+  <section class="px-4 pt-8 pb-4 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <div class="flex flex-wrap gap-2 mb-3">
+        {['AQA GCSE', 'OCR GCSE', 'Cambridge IGCSE', 'A Level'].map(tag => (
+          <span class="rounded-full border border-[#6c8cff]/30 bg-[#6c8cff]/10 px-2.5 py-0.5 text-xs text-[#6c8cff]">{tag}</span>
+        ))}
+      </div>
+      <h1 class="text-3xl font-extrabold text-white">Logic Gate Simulator for GCSE Computer Science</h1>
+      <p class="mt-3 text-slate-400 text-sm max-w-2xl leading-relaxed">
+        Build AND, OR, NOT, NAND, NOR, XOR and XNOR logic circuits interactively. Toggle inputs A and B and watch
+        the output and truth table update in real time. Use this tool to practise Boolean logic for AQA (8525/7517),
+        OCR (J277/H446) and Cambridge IGCSE (0478) Computer Science exams.
+      </p>
+    </div>
+  </section>
+
+  <!-- Tool -->
+  <section class="px-4 pb-8 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <div class="rounded-2xl border border-white/8 bg-[var(--bg-base)] overflow-hidden">
+        <LogicGates client:load />
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference tables -->
+  <section class="px-4 py-10 sm:px-6 border-t border-white/8">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-xl font-extrabold text-white mb-2">Logic gate reference — truth tables</h2>
+      <p class="text-slate-400 text-sm mb-8">You are required to know these truth tables for all three exam boards. NAND and NOR are called "universal gates" because any logic circuit can be built from them alone.</p>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {[
+          { name: 'AND', sym: '&', desc: 'Output is 1 only when BOTH inputs are 1', rows: [['0','0','0'],['0','1','0'],['1','0','0'],['1','1','1']], outCol: [false,false,false,true] },
+          { name: 'OR',  sym: '≥1', desc: 'Output is 1 when AT LEAST ONE input is 1', rows: [['0','0','0'],['0','1','1'],['1','0','1'],['1','1','1']], outCol: [false,true,true,true] },
+          { name: 'NOT', sym: '1', desc: 'Single input — inverts (flips) the input', rows: [['0','1'],['1','0']], outCol: [true,false], singleInput: true },
+          { name: 'NAND', sym: '&', desc: 'Inverted AND — output is 0 only when both inputs are 1', rows: [['0','0','1'],['0','1','1'],['1','0','1'],['1','1','0']], outCol: [true,true,true,false] },
+          { name: 'NOR',  sym: '≥1', desc: 'Inverted OR — output is 1 only when both inputs are 0', rows: [['0','0','1'],['0','1','0'],['1','0','0'],['1','1','0']], outCol: [true,false,false,false] },
+          { name: 'XOR',  sym: '=1', desc: 'Exclusive OR — output is 1 when inputs are DIFFERENT', rows: [['0','0','0'],['0','1','1'],['1','0','1'],['1','1','0']], outCol: [false,true,true,false] },
+        ].map(gate => (
+          <div class="rounded-xl border border-white/8 bg-[var(--bg-card)] overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-white/8">
+              <span class="font-extrabold text-white">{gate.name}</span>
+              <span class="text-xs text-slate-500 leading-snug max-w-[140px] text-right">{gate.desc}</span>
+            </div>
+            <table class="w-full text-xs font-mono">
+              <thead>
+                <tr class="border-b border-white/8">
+                  {gate.singleInput ? (
+                    <><th class="px-3 py-1.5 text-left text-slate-500">A</th><th class="px-3 py-1.5 text-left text-[#34d399]">Out</th></>
+                  ) : (
+                    <><th class="px-3 py-1.5 text-left text-slate-500">A</th><th class="px-3 py-1.5 text-left text-slate-500">B</th><th class="px-3 py-1.5 text-left text-[#34d399]">Out</th></>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {gate.rows.map((row, i) => (
+                  <tr class="border-b border-white/4">
+                    {row.map((cell, ci) => (
+                      <td class={`px-3 py-1.5 ${ci === row.length - 1 ? (gate.outCol[i] ? 'text-[#34d399] font-bold' : 'text-[#f87171] font-bold') : 'text-slate-400'}`}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Exam tips -->
+  <section class="px-4 py-10 sm:px-6 border-t border-white/8">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-xl font-extrabold text-white mb-6">Logic gates exam tips — AQA, OCR and Cambridge</h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        {[
+          { title: 'Drawing gate symbols', tip: 'Exam questions may ask you to draw a circuit from a Boolean expression like A AND (B OR NOT C). Work right to left: identify the final gate, then work backwards through the expression. Always label inputs and the output.' },
+          { title: 'Completing truth tables', tip: 'For a circuit with 3 inputs, you need 8 rows (2³). Start with the rightmost column cycling 0,1,0,1,... — the next column doubles: 0,0,1,1,0,0,1,1 — and so on. Fill in intermediate wire values as separate columns to avoid mistakes.' },
+          { title: 'NAND and NOR gates', tip: 'Remember: NAND = NOT-AND (invert the AND output), NOR = NOT-OR. A universal gate question asks you to implement AND, OR or NOT using only NAND gates (or only NOR). NOT from NAND: connect both inputs together.' },
+          { title: 'Boolean algebra simplification', tip: 'At A Level, you may need to simplify Boolean expressions using De Morgan\'s laws: NOT(A AND B) = NOT A OR NOT B; NOT(A OR B) = NOT A AND NOT B. These are also the mathematical definitions of NAND and NOR.' },
+        ].map(item => (
+          <div class="rounded-xl border border-white/8 bg-[var(--bg-card)] p-5">
+            <h3 class="font-bold text-white text-sm mb-2">{item.title}</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">{item.tip}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="px-4 py-10 sm:px-6 border-t border-white/8">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-xl font-extrabold text-white mb-6">Frequently asked questions — logic gates</h2>
+      <div class="divide-y divide-white/8">
+        {[
+          { q: 'What are logic gates in GCSE Computer Science?', a: 'Logic gates are the fundamental building blocks of digital circuits. They take one or two binary inputs (0 or 1) and produce a single binary output according to Boolean logic rules. The gates you need for GCSE are: AND, OR, NOT, NAND, NOR and XOR. They are used to build processors, memory and all digital systems.' },
+          { q: 'What is the difference between NAND and NOR gates?', a: 'A NAND gate outputs 1 in every case except when both inputs are 1. A NOR gate outputs 1 only when both inputs are 0. Both are called "universal gates" because any other gate can be built entirely from NAND or NOR alone.' },
+          { q: 'Do I need to draw logic gate symbols in the exam?', a: 'Yes. AQA, OCR and Cambridge all require students to draw and interpret logic gate symbols using the standard British (BS) symbols used in this simulator. You may be asked to complete truth tables or draw circuits from Boolean expressions.' },
+          { q: 'What is a truth table?', a: 'A truth table lists all possible combinations of inputs and shows the resulting output. For two inputs (A, B) there are 4 rows. For three inputs there are 8 rows (2³). Always work through the rows systematically — start with A=0,B=0 and increment in binary.' },
+        ].map(faq => (
+          <details class="group py-5">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 list-none">
+              <h3 class="font-semibold text-white text-sm">{faq.q}</h3>
+              <svg class="h-4 w-4 shrink-0 text-slate-500 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <p class="mt-3 text-sm text-slate-400 leading-relaxed">{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Related -->
+  <section class="border-t border-white/8 px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-5">Related resources</h2>
+      <div class="grid gap-3 sm:grid-cols-4">
+        <a href="/revision" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#6c8cff] transition-colors">Question Bank</div>
+          <div class="mt-1 text-xs text-slate-500">Logic gate exam questions</div>
+        </a>
+        <a href="/revision/aqa-gcse-computer-science" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#6c8cff] transition-colors">AQA GCSE Revision</div>
+          <div class="mt-1 text-xs text-slate-500">Full spec 8525 resources</div>
+        </a>
+        <a href="/revision/ocr-gcse-computer-science" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#6c8cff] transition-colors">OCR GCSE Revision</div>
+          <div class="mt-1 text-xs text-slate-500">Full J277 resources</div>
+        </a>
+        <a href="/tutoring" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#6c8cff] transition-colors">1-to-1 Tutoring</div>
+          <div class="mt-1 text-xs text-slate-500">Boolean logic help online</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

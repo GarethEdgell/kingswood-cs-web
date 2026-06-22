@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import FSMSimulator from '../../components/tools/FSMSimulator.svelte';
+---
+
+<BaseLayout
+  title="Finite State Machine (FSM) Simulator — CompSci Tutoring"
+  description="Interactive FSM simulator for AQA A Level Computer Science. Draw states and transitions, then test strings step-by-step to see whether they are accepted or rejected."
+>
+  <Nav />
+
+  <section class="px-4 pt-12 pb-20 sm:px-6">
+    <div class="mx-auto max-w-5xl">
+
+      <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-wider text-[#6c8cff]">Tools · AQA A Level</p>
+        <h1 class="mt-1 text-3xl font-extrabold text-white">Finite State Machine Simulator</h1>
+        <p class="mt-2 text-slate-400 max-w-3xl">
+          Build FSMs by clicking to add states and shift-dragging to create transitions.
+          Switch to Test mode to run strings step-by-step and see the execution trace.
+          Covers AQA 7517 Section 3.2 — Theory of Computation.
+        </p>
+      </div>
+
+      <FSMSimulator client:load />
+
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

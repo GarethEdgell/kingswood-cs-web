@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import LMCSimulator from '../../components/tools/LMCSimulator.svelte';
+---
+
+<BaseLayout
+  title="Little Man Computer (LMC) Simulator — CompSci Tutoring"
+  description="Interactive LMC simulator for GCSE and A Level Computer Science. Write LMC assembly programs, step through execution, and watch the accumulator and memory update in real time."
+>
+  <Nav />
+
+  <section class="px-4 pt-12 pb-20 sm:px-6">
+    <div class="mx-auto max-w-6xl">
+
+      <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-wider text-[#6c8cff]">Tools</p>
+        <h1 class="mt-1 text-3xl font-extrabold text-white">Little Man Computer (LMC) Simulator</h1>
+        <p class="mt-2 text-slate-400 max-w-3xl">
+          Write LMC assembly programs, assemble them and step through execution one instruction at a time.
+          Watch the accumulator, program counter and all 100 mailboxes update in real time.
+          Used by OCR GCSE and various A Level courses to teach low-level programming concepts.
+        </p>
+      </div>
+
+      <LMCSimulator client:load />
+
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

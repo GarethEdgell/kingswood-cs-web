@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import ExamCountdown from '../../components/tools/ExamCountdown.svelte';
+---
+
+<BaseLayout
+  title="Exam Countdown — GCSE & A Level Computer Science 2026 | CompSci Tutoring"
+  description="Countdown to your GCSE or A Level Computer Science exam. Supports AQA, OCR, Cambridge, and Eduqas. See exactly how many days you have left to revise."
+>
+  <Nav />
+
+  <section class="border-b border-white/8 bg-[var(--bg-card)] px-4 py-6 sm:px-6">
+    <div class="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <a href="/tools" class="text-slate-500 hover:text-white transition-colors text-sm">← Tools</a>
+        <span class="text-slate-700">/</span>
+        <span class="text-sm text-slate-300">⏱️ Exam Countdown</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-3xl">⏱️</span>
+          <h1 class="text-2xl font-extrabold text-white">Exam Countdown</h1>
+        </div>
+        <p class="text-slate-400">
+          Select your exam board and level to see how long you have left — and how to spend that time.
+        </p>
+      </div>
+
+      <ExamCountdown client:load />
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

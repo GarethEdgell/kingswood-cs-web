@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import BinaryConverter from '../../components/tools/BinaryConverter.svelte';
+---
+
+<BaseLayout
+  title="Binary, Hex & Data Representation Tool — CompSci Tutoring"
+  description="Interactive data representation tool for GCSE Computer Science. Convert between binary, denary and hexadecimal. Two's complement, bit shifts, file sizes and ASCII."
+>
+  <Nav />
+
+  <div class="px-4 pt-10 pb-4 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <a href="/tools" class="mb-4 inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-white transition-colors">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        All tools
+      </a>
+
+      <div class="flex flex-wrap items-start gap-4 justify-between">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-wider text-[#34d399]">Data Representation</p>
+          <h1 class="mt-1 text-3xl font-extrabold text-white">Binary &amp; Hex Converter</h1>
+          <p class="mt-1 text-slate-400 text-sm max-w-xl">
+            All the data representation topics in one place — bases, two's complement, shifts, file sizes, and ASCII.
+            Perfect for GCSE Computer Science revision.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs">
+          {['AQA GCSE', 'OCR GCSE', 'Cambridge IGCSE', 'A Level'].map(tag => (
+            <span class="rounded-full border border-[#34d399]/25 bg-[#34d399]/10 px-2.5 py-1 text-[#34d399]">{tag}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tool -->
+  <section class="px-4 pb-20 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <div class="rounded-2xl border border-white/8 bg-[var(--bg-base)] overflow-hidden">
+        <BinaryConverter client:load />
+      </div>
+    </div>
+  </section>
+
+  <!-- Related topics -->
+  <section class="border-t border-white/8 px-4 py-12 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-5">Related revision</h2>
+      <div class="grid gap-3 sm:grid-cols-3">
+        <a href="/revision" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white group-hover:text-[#6c8cff] transition-colors text-sm">Question Bank</div>
+          <div class="mt-1 text-xs text-slate-500">Data representation exam questions</div>
+        </a>
+        <a href="/revision/notes" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white group-hover:text-[#6c8cff] transition-colors text-sm">Revision Notes</div>
+          <div class="mt-1 text-xs text-slate-500">Full notes on number systems</div>
+        </a>
+        <a href="/revision/flashcards" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#6c8cff]/30 transition-colors">
+          <div class="font-semibold text-white group-hover:text-[#6c8cff] transition-colors text-sm">Flashcards</div>
+          <div class="mt-1 text-xs text-slate-500">Key terms for data representation</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

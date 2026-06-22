@@ -1,0 +1,190 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import AlgorithmVisualiser from '../../components/tools/AlgorithmVisualiser.svelte';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    { '@type': 'Question', name: 'What sorting algorithms do I need for GCSE Computer Science?', acceptedAnswer: { '@type': 'Answer', text: 'For GCSE Computer Science (AQA 8525, OCR J277, Cambridge 0478) you need to know bubble sort and insertion sort — how they work step by step and how to trace through them by hand in an exam. You should be able to write out the state of the array after each pass of bubble sort, and show each insertion step for insertion sort. Big O time complexity notation is not required at GCSE; it is A Level content.' }},
+    { '@type': 'Question', name: 'What is the difference between linear search and binary search?', acceptedAnswer: { '@type': 'Answer', text: 'Linear search checks each element in order from the start — it works on any list (sorted or unsorted) but can be slow for large lists because in the worst case every element must be checked. Binary search repeatedly halves the search space and is much faster, but the list must be sorted first. For 1,024 items, binary search takes at most 10 comparisons rather than up to 1,024 for linear search. Note: Big O notation (O(n), O(log n)) is assessed at A Level only, not at GCSE.' }},
+    { '@type': 'Question', name: 'What are Dijkstra and A* algorithms used for in A Level Computer Science?', acceptedAnswer: { '@type': 'Answer', text: 'Both are pathfinding algorithms for weighted graphs. Dijkstra\'s algorithm finds the shortest path from a source node to all other nodes by always expanding the nearest unvisited node. A* improves on Dijkstra by using a heuristic function h(n) to estimate the remaining distance to the goal — this focuses the search and is typically faster. A* is used in navigation systems, games and robotics. Both are assessed in AQA 7517 and OCR H446 A Level Computer Science.' }},
+    { '@type': 'Question', name: 'How do I complete a trace table for bubble sort in the exam?', acceptedAnswer: { '@type': 'Answer', text: 'Trace each pass through the array. On each pass, compare adjacent pairs left to right — if the left is greater, swap them. Record the state of the array after each full pass. The algorithm can terminate early if a complete pass makes no swaps — note this in your trace. In the exam, the question usually asks for the state after each pass, or after a specific number of comparisons.' }},
+  ],
+};
+---
+
+<BaseLayout
+  title="Algorithm Visualiser — Bubble Sort, Binary Search, Dijkstra & A* | CompSci Tutoring"
+  description="Interactive algorithm visualiser for GCSE and A Level Computer Science. Step-by-step bubble sort, insertion sort, binary search, Dijkstra and A* with live trace tables. AQA, OCR, Cambridge."
+  {schema}
+>
+  <Nav />
+
+  <div class="px-4 pt-10 pb-4 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <a href="/tools" class="mb-4 inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-white transition-colors">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        All tools
+      </a>
+
+      <div class="flex flex-wrap items-start gap-4 justify-between">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-wider text-[#fbbf24]">Algorithms</p>
+          <h1 class="mt-1 text-3xl font-extrabold text-white">Algorithm Visualiser — Sorting, Searching & Pathfinding</h1>
+          <p class="mt-1 text-slate-400 text-sm max-w-xl leading-relaxed">
+            Watch sorting and searching algorithms execute step-by-step with a live trace table. Covers bubble sort,
+            insertion sort, linear search and binary search for GCSE, plus Dijkstra's algorithm and A* pathfinding
+            for A Level Computer Science. Every step shows exactly what changes — just like an exam trace question.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs">
+          {['AQA GCSE', 'OCR GCSE', 'Cambridge IGCSE', 'AQA A Level', 'OCR A Level'].map(tag => (
+            <span class="rounded-full border border-[#fbbf24]/25 bg-[#fbbf24]/10 px-2.5 py-1 text-[#fbbf24]">{tag}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tool -->
+  <section class="px-4 pb-10 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <div class="rounded-2xl border border-white/8 bg-[var(--bg-base)] overflow-hidden">
+        <AlgorithmVisualiser client:load />
+      </div>
+    </div>
+  </section>
+
+  <!-- Algorithm guide -->
+  <section class="px-4 py-10 sm:px-6 border-t border-white/8">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-xl font-extrabold text-white mb-2">Algorithm guide — what you need to know for the exam</h2>
+      <p class="text-slate-400 text-sm mb-8">Each algorithm below is assessed at either GCSE or A Level. Click the algorithm in the visualiser above to see it in action with a live trace table.</p>
+
+      <div class="space-y-4">
+        {[
+          {
+            name: 'Bubble Sort', level: 'GCSE', emoji: '🫧',
+            desc: 'Repeatedly scans the array comparing adjacent pairs and swapping them if they are in the wrong order. After each complete pass, the largest unsorted element "bubbles" to its correct position at the end. The algorithm can terminate early if a complete pass produces no swaps — this is an important efficiency feature to mention in the exam.',
+            exam: 'Trace by writing out the full array after each pass. Count the number of comparisons and swaps made. Note if early termination occurs because a complete pass had no swaps.',
+          },
+          {
+            name: 'Insertion Sort', level: 'GCSE', emoji: '📌',
+            desc: 'Builds a sorted section one element at a time, starting from the left. Takes each new element from the unsorted part and inserts it into the correct position in the sorted section by shifting larger elements one place to the right.',
+            exam: 'Trace by showing the sorted section growing one element at a time. For each new element, show it being compared against sorted elements from right to left until the correct position is found.',
+          },
+          {
+            name: 'Linear Search', level: 'GCSE', emoji: '🔍',
+            desc: 'Checks each element from the start of the list in order until the target is found or the list is exhausted. Works on both sorted and unsorted data. Simple to implement but can require checking every element in the worst case.',
+            exam: 'State which element is being checked at each step. State the total number of comparisons made to find the target (or confirm it is not present). Remember: linear search works on unsorted lists — binary search does not.',
+          },
+          {
+            name: 'Binary Search', level: 'GCSE', emoji: '⚡',
+            desc: 'Requires a sorted list. Finds the midpoint of the current search range, compares it to the target, then discards the half that cannot contain the target and repeats. For 1,024 elements at most 10 comparisons are needed — far fewer than checking every element.',
+            exam: 'Show the low, mid and high pointers at each step. Calculate mid = ⌊(low + high) / 2⌋. State which half is discarded and why. The list must be sorted — state this if the question asks when to use binary vs linear search.',
+          },
+          {
+            name: "Dijkstra's Algorithm", level: 'A Level', complexity: 'O((V+E) log V)', emoji: '🗺️',
+            desc: 'Finds the shortest path in a weighted graph from a source node to all other nodes. Uses a priority queue (ordered by distance) to always expand the nearest unvisited node first. Guarantees the optimal shortest path for graphs with non-negative edge weights.',
+            exam: 'Trace by maintaining a distance table with columns for each node. Show which node is dequeued at each step, which distances are updated, and the final shortest-path reconstruction by following previous-node pointers.',
+          },
+          {
+            name: 'A* Search', level: 'A Level', complexity: 'O(b^d) worst case', emoji: '⭐',
+            desc: 'An informed extension of Dijkstra that uses a heuristic h(n) — an estimate of the remaining cost to reach the goal. Combines actual cost from the start g(n) with the heuristic estimate: f(n) = g(n) + h(n). Always expands the node with the lowest f score. Finds the optimal path if h(n) is admissible (never overestimates).',
+            exam: 'Know the distinction between g(n) (cost so far), h(n) (heuristic estimate) and f(n) = g(n) + h(n) (total estimated cost). Understand admissibility. Trace the open set (frontier) and closed set (visited) at each step.',
+          },
+        ].map(algo => (
+          <div class="rounded-xl border border-white/8 bg-[var(--bg-card)] p-5">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl shrink-0">{algo.emoji}</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="font-bold text-white">{algo.name}</h3>
+                  <span class={`rounded-full border px-2 py-0.5 text-xs font-semibold ${algo.level === 'GCSE' ? 'border-[#34d399]/30 bg-[#34d399]/10 text-[#34d399]' : 'border-[#818cf8]/30 bg-[#818cf8]/10 text-[#818cf8]'}`}>
+                    {algo.level}
+                  </span>
+                  {algo.complexity && (
+                    <code class="rounded bg-[#fbbf24]/15 px-1.5 py-0.5 text-xs text-[#fbbf24] font-mono">{algo.complexity}</code>
+                  )}
+                </div>
+                <p class="mt-1.5 text-sm text-slate-400 leading-relaxed">{algo.desc}</p>
+              </div>
+            </div>
+            <div class="mt-3 rounded-lg bg-white/3 border border-white/5 px-4 py-2.5">
+              <span class="text-xs font-semibold text-[#fbbf24]">Exam technique: </span>
+              <span class="text-xs text-slate-400">{algo.exam}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- GCSE / A Level split note -->
+      <div class="mt-6 rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 flex gap-3">
+        <span class="text-lg shrink-0">📌</span>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          <span class="font-semibold text-slate-200">GCSE vs A Level: </span>
+          At GCSE you need to <strong class="text-white">trace</strong> algorithms by hand and describe how they work — you do not need Big O notation.
+          Big O time and space complexity is <strong class="text-white">A Level only</strong> (AQA 7517, OCR H446).
+          For GCSE, focus on being able to write out each step and compare algorithms based on number of comparisons for a given input.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="px-4 py-10 sm:px-6 border-t border-white/8">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-xl font-extrabold text-white mb-6">Frequently asked questions — algorithms</h2>
+      <div class="divide-y divide-white/8">
+        {[
+          { q: 'What sorting algorithms do I need for GCSE Computer Science?', a: 'At GCSE (AQA 8525, OCR J277, Cambridge 0478) you need to know bubble sort and insertion sort — how they work step by step and how to trace through them by hand. You should be able to write out the state of the array after each pass of bubble sort, and show each insertion for insertion sort. Big O time complexity is not required at GCSE; it is A Level content.' },
+          { q: 'Do I need to know Big O notation for GCSE?', a: 'No. Big O notation (O(n), O(n²), O(log n)) is assessed at A Level only — AQA 7517 and OCR H446. At GCSE you need to be able to trace algorithms by hand and compare them based on the number of comparisons made. For example, a GCSE question might ask: "How many comparisons does a binary search make on a list of 16 items?" — you work this out from the algorithm, not from Big O.' },
+          { q: 'What is the difference between linear search and binary search?', a: 'Linear search checks each element in order from the first — it works on any list (sorted or unsorted) but can require checking every element in the worst case. Binary search repeatedly halves the search space and is much faster, but the list must already be sorted. For a list of 1,024 items, binary search takes at most 10 comparisons rather than up to 1,024 for linear search.' },
+          { q: 'What are Dijkstra and A* used for?', a: 'Both are A Level algorithms for finding the shortest path through a weighted graph. Dijkstra\'s algorithm explores nodes in order of their distance from the start. A* improves on this by using a heuristic — an estimate of remaining distance — to focus the search towards the goal. Both are assessed at A Level (AQA 7517 and OCR H446). They are not required at GCSE.' },
+          { q: 'How do I trace a bubble sort in the exam?', a: 'Write out the full array. On each pass, compare adjacent pairs from left to right — if the left value is greater than the right, swap them. Write out the array after each complete pass. If a full pass makes no swaps, the array is sorted and you can stop — always note this early termination in your answer.' },
+        ].map(faq => (
+          <details class="group py-5">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 list-none">
+              <h3 class="font-semibold text-white text-sm">{faq.q}</h3>
+              <svg class="h-4 w-4 shrink-0 text-slate-500 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <p class="mt-3 text-sm text-slate-400 leading-relaxed">{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Related -->
+  <section class="border-t border-white/8 px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-5">Related resources</h2>
+      <div class="grid gap-3 sm:grid-cols-4">
+        <a href="/revision" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#fbbf24]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#fbbf24] transition-colors">Question Bank</div>
+          <div class="mt-1 text-xs text-slate-500">Algorithm exam questions with mark schemes</div>
+        </a>
+        <a href="/revision/aqa-gcse-computer-science" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#fbbf24]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#fbbf24] transition-colors">AQA GCSE Revision</div>
+          <div class="mt-1 text-xs text-slate-500">Sorting & searching for spec 8525</div>
+        </a>
+        <a href="/revision/aqa-a-level-computer-science" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#fbbf24]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#fbbf24] transition-colors">AQA A Level CS</div>
+          <div class="mt-1 text-xs text-slate-500">Dijkstra, A* and graph algorithms</div>
+        </a>
+        <a href="/tutoring" class="group rounded-xl border border-white/8 bg-[var(--bg-card)] p-4 hover:border-[#fbbf24]/30 transition-colors">
+          <div class="font-semibold text-white text-sm group-hover:text-[#fbbf24] transition-colors">1-to-1 Tutoring</div>
+          <div class="mt-1 text-xs text-slate-500">Algorithm help with an expert</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
