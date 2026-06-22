@@ -71,30 +71,48 @@ import Footer from '../components/Footer.astro';
   const form = document.getElementById('loginForm') as HTMLFormElement;
   const errorDiv = document.getElementById('error') as HTMLDivElement;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    errorDiv.classList.add('hidden');
+  console.log('🔍 Login script loaded');
+  console.log('Form:', form);
+  console.log('Error div:', errorDiv);
+  console.log('Supabase:', supabase);
 
-    const email = (document.getElementById('email') as HTMLInputElement).value;
-    const password = (document.getElementById('password') as HTMLInputElement).value;
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      console.log('📝 Form submitted');
+      e.preventDefault();
+      errorDiv.classList.add('hidden');
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const email = (document.getElementById('email') as HTMLInputElement).value;
+      const password = (document.getElementById('password') as HTMLInputElement).value;
 
-      if (error) {
-        errorDiv.textContent = error.message;
+      console.log('📧 Attempting login with:', email);
+
+      try {
+        console.log('🔄 Calling supabase.auth.signInWithPassword...');
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        console.log('Response - Data:', data, 'Error:', error);
+
+        if (error) {
+          console.error('❌ Auth error:', error.message);
+          errorDiv.textContent = error.message;
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        console.log('✅ Login successful, redirecting...');
+        // Redirect to dashboard on success
+        window.location.href = '/dashboard';
+      } catch (err) {
+        console.error('❌ Exception:', err);
+        errorDiv.textContent = 'An error occurred. Please try again.';
         errorDiv.classList.remove('hidden');
-        return;
       }
-
-      // Redirect to dashboard on success
-      window.location.href = '/dashboard';
-    } catch (err) {
-      errorDiv.textContent = 'An error occurred. Please try again.';
-      errorDiv.classList.remove('hidden');
-    }
-  });
+    });
+  } else {
+    console.error('❌ Form not found!');
+  }
 </script>
