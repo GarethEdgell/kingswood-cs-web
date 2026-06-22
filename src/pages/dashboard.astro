@@ -3,12 +3,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { getUser } from '../lib/supabase';
+import { COURSES } from '../data/courses';
 
 const { user } = await getUser(Astro.request, Astro.cookies);
 
 if (!user) {
   return Astro.redirect('/login');
 }
+
+// Note: In production, get accessible courses from Supabase via API
+// For now, show all courses as a demo
+const accessibleCourses = COURSES;
+const dfCourses = accessibleCourses.filter(c => c.category === 'Digital Futures');
+const csCourses = accessibleCourses.filter(c => c.category === 'Computer Science');
 ---
 
 <BaseLayout
@@ -19,40 +26,82 @@ if (!user) {
 
   <section class="px-4 py-24 sm:px-6 sm:py-32">
     <div class="mx-auto max-w-6xl">
-      <h1 class="text-5xl font-black text-white mb-12">Your Dashboard</h1>
+      <h1 class="text-5xl font-black text-white mb-4">Welcome back, {user.user_metadata?.full_name || 'Student'}</h1>
+      <p class="text-lg text-slate-400 mb-12">Your accessible courses and progress</p>
 
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <div class="text-3xl mb-2">✨</div>
-          <h3 class="font-bold text-white">Digital Futures Progress</h3>
-          <p class="text-slate-400 text-sm mt-2">0 / 34 lessons completed</p>
-          <div class="mt-4">
-            <a href="/digital-futures" class="text-cyan-400 hover:text-cyan-300 text-sm font-semibold">Continue →</a>
-          </div>
+      <!-- Quick Stats -->
+      <div class="grid gap-6 sm:grid-cols-3 mb-12">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+          <div class="text-4xl font-black text-cyan-400 mb-2">0</div>
+          <p class="text-slate-400 text-sm">Lessons Completed</p>
         </div>
-
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <div class="text-3xl mb-2">📚</div>
-          <h3 class="font-bold text-white">Revision</h3>
-          <p class="text-slate-400 text-sm mt-2">0 questions answered</p>
-          <div class="mt-4">
-            <a href="/revision" class="text-cyan-400 hover:text-cyan-300 text-sm font-semibold">Start revising →</a>
-          </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+          <div class="text-4xl font-black text-purple-400 mb-2">0%</div>
+          <p class="text-slate-400 text-sm">Overall Progress</p>
         </div>
-
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <div class="text-3xl mb-2">🏆</div>
-          <h3 class="font-bold text-white">Achievements</h3>
-          <p class="text-slate-400 text-sm mt-2">0 unlocked</p>
-          <div class="mt-4">
-            <p class="text-slate-500 text-sm">Complete lessons and quizzes to earn badges</p>
-          </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+          <div class="text-4xl font-black text-green-400 mb-2">{accessibleCourses.length}</div>
+          <p class="text-slate-400 text-sm">Courses Available</p>
         </div>
       </div>
 
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
-        <h2 class="text-2xl font-black text-white mb-4">Welcome, {user.user_metadata?.full_name || user.email}</h2>
-        <p class="text-slate-400">Your progress is saved automatically. Keep exploring!</p>
+      <!-- Digital Futures -->
+      {dfCourses.length > 0 && (
+        <div class="mb-12">
+          <h2 class="text-2xl font-black text-white mb-6 flex items-center gap-2">
+            ✨ Digital Futures
+          </h2>
+          <div class="grid gap-4 sm:grid-cols-2">
+            {dfCourses.map(course => (
+              <a href={course.href}
+                 class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 hover:border-white/20 transition-all">
+                <div class="text-3xl mb-3">{course.icon}</div>
+                <h3 class="font-bold text-white mb-1">{course.name}</h3>
+                <p class="text-sm text-slate-400">{course.description}</p>
+                <div class="mt-4 text-cyan-400 text-sm font-semibold">Start learning →</div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Computer Science -->
+      {csCourses.length > 0 && (
+        <div class="mb-12">
+          <h2 class="text-2xl font-black text-white mb-6 flex items-center gap-2">
+            📚 Computer Science Revision
+          </h2>
+          <div class="grid gap-4 sm:grid-cols-2">
+            {csCourses.map(course => (
+              <a href={course.href}
+                 class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 hover:border-white/20 transition-all">
+                <div class="text-3xl mb-3">{course.icon}</div>
+                <h3 class="font-bold text-white mb-1">{course.name}</h3>
+                <p class="text-sm text-slate-400">{course.description}</p>
+                <div class="flex items-center gap-2 mt-4 text-sm text-slate-400">
+                  {course.badge && <span class="bg-white/10 px-2 py-1 rounded text-xs">{course.badge}</span>}
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {accessibleCourses.length === 0 && (
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
+          <p class="text-slate-400 mb-4">You don't have access to any courses yet.</p>
+          <p class="text-sm text-slate-500">Ask your teacher to give you access to Digital Futures or Computer Science revision.</p>
+        </div>
+      )}
+
+      <!-- Quick Links -->
+      <div class="mt-16 border-t border-white/8 pt-12">
+        <h2 class="text-2xl font-black text-white mb-6">Tools</h2>
+        <a href="/tools" class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-colors inline-block">
+          <div class="text-3xl mb-2">⚙️</div>
+          <h3 class="font-bold text-white">Interactive Tools</h3>
+          <p class="text-sm text-slate-400 mt-1">Binary, logic gates, algorithms, LMC, FSM</p>
+        </a>
       </div>
     </div>
   </section>

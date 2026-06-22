@@ -89,18 +89,47 @@ const { classId } = Astro.params;
 </BaseLayout>
 
 <script>
-  // Handle form submission
+  // Handle form submission - save course access to backend
   const form = document.getElementById('courseAccessForm') as HTMLFormElement;
   const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
 
-  if (form) {
-    submitBtn?.addEventListener('click', async () => {
+  if (form && submitBtn) {
+    submitBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+
       const checkboxes = form.querySelectorAll('input[type="checkbox"]:checked') as NodeListOf<HTMLInputElement>;
       const selectedCourses = Array.from(checkboxes).map(cb => cb.value);
 
-      // TODO: Save to Supabase
-      console.log('Selected courses:', selectedCourses);
-      alert(`Saved! Students can now access: ${selectedCourses.join(', ')}`);
+      if (selectedCourses.length === 0) {
+        alert('Please select at least one course');
+        return;
+      }
+
+      // Submit to backend - in a real app, you'd get the student ID from URL
+      // For now, this is a placeholder showing the pattern
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
+
+      try {
+        const response = await fetch('/api/courses/grant-access', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            studentId: 'placeholder', // TODO: Get from URL params
+            courseIds: selectedCourses,
+          }),
+        });
+
+        if (!response.ok) throw new Error('Failed to save');
+
+        alert(`✓ Saved! Students can now access: ${selectedCourses.join(', ')}`);
+        submitBtn.textContent = 'Save Course Access';
+      } catch (err) {
+        alert(`Error: ${(err as Error).message}`);
+        submitBtn.textContent = 'Save Course Access';
+      } finally {
+        submitBtn.disabled = false;
+      }
     });
   }
 </script>
