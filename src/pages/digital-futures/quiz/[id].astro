@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import { getAllDFLessons } from '../../../data/digitalFutures';
+
+export async function getStaticPaths() {
+  const allLessons = getAllDFLessons();
+  return allLessons.map(lesson => ({
+    params: { id: lesson.id }
+  }));
+}
+
+const { id } = Astro.params;
+
+// Get all lessons and find the one matching the ID
+const allLessons = getAllDFLessons();
+const lesson = allLessons.find(l => l.id === id);
+
+if (!lesson) {
+  return Astro.redirect('/digital-futures');
+}
+---
+
+<BaseLayout
+  title={`Quiz: ${lesson.title} — Digital Futures`}
+  description={`Test your knowledge on ${lesson.title}`}
+>
+  <Nav />
+
+  <section class="px-4 py-12 sm:px-6">
+    <div class="mx-auto max-w-2xl">
+      <div class="flex items-center gap-3 mb-6">
+        <a href={`/digital-futures/lesson/${lesson.id}`} class="text-slate-400 hover:text-white transition-colors">← Back to Lesson</a>
+      </div>
+
+      <div class="mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-4xl">{lesson.emoji}</span>
+          <div>
+            <h1 class="text-3xl font-black text-white">Quiz: {lesson.title}</h1>
+            <p class="text-slate-400">{lesson.subtitle}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
+        <div class="text-6xl mb-4">🚧</div>
+        <h2 class="text-2xl font-bold text-white mb-2">Quizzes Coming Soon</h2>
+        <p class="text-slate-400 mb-6">Interactive quizzes for this lesson are being developed.</p>
+
+        <div class="space-y-3">
+          <p class="text-sm text-slate-400">For now, you can:</p>
+          <div class="flex flex-col gap-2 pt-4">
+            <a href={`/digital-futures/lesson/${lesson.id}`} class="rounded-lg px-4 py-2 bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors border border-cyan-500/40">
+              📖 Review Lesson Content
+            </a>
+            <a href="/digital-futures" class="rounded-lg px-4 py-2 bg-white/10 text-white hover:bg-white/20 transition-colors border border-white/20">
+              🎓 Browse All Lessons
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12 rounded-2xl border border-white/10 bg-white/5 p-6">
+        <h3 class="text-lg font-bold text-white mb-3">💡 Self-Assessment</h3>
+        <p class="text-slate-300 mb-4">In the meantime, use these questions to test your understanding:</p>
+        <ul class="space-y-3">
+          {lesson.objectives.map((obj, i) => (
+            <li class="flex gap-3">
+              <span class="text-cyan-400 font-bold min-w-fit">Q{i + 1}.</span>
+              <span class="text-slate-300">Can you explain: {obj.toLowerCase()}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

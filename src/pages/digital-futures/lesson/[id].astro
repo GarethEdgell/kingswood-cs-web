@@ -4,6 +4,13 @@ import Nav from '../../../components/Nav.astro';
 import Footer from '../../../components/Footer.astro';
 import { getAllDFLessons, DF_UNITS } from '../../../data/digitalFutures';
 
+export async function getStaticPaths() {
+  const allLessons = getAllDFLessons();
+  return allLessons.map(lesson => ({
+    params: { id: lesson.id }
+  }));
+}
+
 const { id } = Astro.params;
 
 // Get all lessons and find the one matching the ID
