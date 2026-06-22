@@ -4,7 +4,10 @@ import { getServerSupabase } from '../../lib/supabase';
 const supabase = getServerSupabase(Astro.request, Astro.cookies);
 await supabase.auth.signOut();
 
-// Clear our custom auth cookies
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL ?? '';
+const projectRef = supabaseUrl.replace('https://', '').split('.')[0];
+
+Astro.cookies.delete(`sb-${projectRef}-auth-token`, { path: '/' });
 Astro.cookies.delete('sb-access-token', { path: '/' });
 Astro.cookies.delete('sb-refresh-token', { path: '/' });
 

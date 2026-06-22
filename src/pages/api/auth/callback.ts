@@ -1,50 +1,61 @@
 import type { APIRoute } from 'astro';
-import { getServiceSupabase } from '../../../lib/supabase';
+
+// Supabase SSR reads cookies named sb-{projectRef}-auth-token
+// The project ref is extracted from the Supabase URL
+const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL ?? '';
+const PROJECT_REF = SUPABASE_URL.replace('https://', '').split('.')[0];
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
-    const { access_token, refresh_token, expires_in } = await request.json();
+    const body = await request.json();
+    const { access_token, refresh_token, expires_in, token_type, user } = body;
 
     if (!access_token) {
-      return new Response(JSON.stringify({ error: 'No access token' }), {
-        status: 400,
-      });
+      return json({ error: 'No access token' }, 400);
     }
 
-    // Set Supabase session cookies
     const expiresIn = expires_in || 3600;
-    const now = new Date();
-    const expires = new Date(now.getTime() + expiresIn * 1000);
 
-    // Set auth token cookie
-    cookies.set('sb-access-token', access_token, {
+    // Store in the exact format @supabase/ssr expects
+    // Cookie name: sb-{projectRef}-auth-token
+    const sessionData = JSON.stringify({
+      access_token,
+      token_type: token_type ?? 'bearer',
+      expires_in: expiresIn,
+      expires_at: Math.floor(Date.now() / 1000) + expiresIn,
+      refresh_token: refresh_token ?? '',
+      user,
+    });
+
+    const cookieName = `sb-${PROJECT_REF}-auth-token`;
+
+    cookies.set(cookieName, sessionData, {
       path: '/',
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'lax',
       maxAge: expiresIn,
     });
 
-    if (refresh_token) {
-      cookies.set('sb-refresh-token', refresh_token, {
-        path: '/',
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60, // 7 days
-      });
-    }
-
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    // Also set our legacy cookie so existing token checks still work
+    cookies.set('sb-access-token', access_token, {
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: expiresIn,
     });
+
+    return json({ success: true });
   } catch (error) {
     console.error('Auth callback error:', error);
-    return new Response(JSON.stringify({ error: 'Auth callback failed' }), {
-      status: 500,
-    });
+    return json({ error: 'Auth callback failed' }, 500);
   }
 };
+
+function json(body: object, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
