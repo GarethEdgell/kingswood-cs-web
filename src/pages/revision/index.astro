@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout
+  title="Revision Hub — OCR GCSE & A Level Computer Science"
+  description="Question bank, notes, flashcards and tools for OCR Computer Science revision."
+>
+  <Nav />
+
+  <section class="relative overflow-hidden px-4 py-24 sm:px-6 sm:py-32">
+    <div class="mx-auto max-w-4xl text-center">
+      <h1 class="text-5xl sm:text-6xl font-black text-white mb-4">Revision Hub</h1>
+      <p class="text-lg text-slate-400 mb-8">Everything you need to ace OCR Computer Science exams</p>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <a href="/revision/ocr-gcse-computer-science" class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-colors text-left">
+          <div class="text-3xl mb-2">🟢</div>
+          <h3 class="font-bold text-white text-lg">OCR GCSE</h3>
+          <p class="text-sm text-slate-400 mt-1">J277 specification</p>
+        </a>
+        <a href="/revision/ocr-a-level-computer-science" class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-colors text-left">
+          <div class="text-3xl mb-2">🟢</div>
+          <h3 class="font-bold text-white text-lg">OCR A Level</h3>
+          <p class="text-sm text-slate-400 mt-1">H446 specification</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

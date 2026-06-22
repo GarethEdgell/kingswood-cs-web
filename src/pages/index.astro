@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const features = [
+  { icon: '🤖', title: 'Digital Futures', desc: 'Year 8 & 9 AI & digital skills curriculum using Microsoft 365 tools' },
+  { icon: '❓', title: 'OCR Question Bank', desc: '2000+ exam questions for GCSE and A Level Computer Science' },
+  { icon: '📖', title: 'Revision Content', desc: 'Notes, flashcards, cheat sheets and mock exams — OCR aligned' },
+  { icon: '⚙️', title: 'Interactive Tools', desc: 'Binary converter, logic gates, LMC simulator, algorithms and more' },
+];
+---
+
+<BaseLayout
+  title="Kingswood Computer Science — Digital Skills & Exam Prep"
+  description="OCR GCSE & A Level Computer Science revision, Digital Futures curriculum, and Microsoft 365 tools for Kingswood School."
+>
+  <Nav />
+
+  <!-- HERO -->
+  <section class="relative overflow-hidden px-4 py-24 sm:px-6 sm:py-32 text-center">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 left-1/2 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-20"
+           style="background: radial-gradient(circle, #00d4ff 0%, #7c3aed 50%, transparent 70%)"></div>
+    </div>
+
+    <div class="relative mx-auto max-w-4xl">
+      <div class="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-semibold mb-6"
+           style="border-color:rgba(0,212,255,0.4); background:rgba(0,212,255,0.08); color:#00d4ff">
+        <span class="h-1.5 w-1.5 rounded-full animate-pulse" style="background:#00d4ff"></span>
+        Kingswood Computer Science
+      </div>
+
+      <h1 class="text-5xl sm:text-7xl font-black text-white mb-4 leading-none tracking-tight">
+        Deep <br/>
+        <span style="background: linear-gradient(135deg, #00d4ff, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Learning
+        </span>
+      </h1>
+
+      <p class="text-lg sm:text-xl text-slate-400 mb-6 max-w-2xl mx-auto leading-relaxed">
+        Explore Computer Science with Digital Futures, ace your exams with targeted revision, and master real-world tools used by tech professionals.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="/digital-futures"
+           class="rounded-2xl px-6 py-3 text-sm font-bold text-white transition-all hover:scale-105"
+           style="background: linear-gradient(135deg, #00d4ff, #0099bb)">
+          🚀 Digital Futures
+        </a>
+        <a href="/revision"
+           class="rounded-2xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-white/10">
+          📚 Revision Hub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="px-4 py-16 sm:px-6 border-t border-white/8">
+    <div class="mx-auto max-w-6xl">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">Everything you need</h2>
+        <p class="text-slate-400 max-w-xl mx-auto">Curriculum, revision, and tools — all in one place.</p>
+      </div>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {features.map(f => (
+          <div class="rounded-2xl border border-white/8 bg-[var(--bg-card)] p-6 hover:border-white/15 transition-colors">
+            <div class="text-4xl mb-3">{f.icon}</div>
+            <h3 class="font-bold text-white mb-2">{f.title}</h3>
+            <p class="text-sm text-slate-400">{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

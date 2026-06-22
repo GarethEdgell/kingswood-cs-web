@@ -1,0 +1,48 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-white/8 bg-[var(--bg-footer)]">
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+    <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
+      <div class="col-span-2 md:col-span-1">
+        <a href="/" class="flex items-center gap-2 font-bold text-white">
+          <div class="h-6 w-6 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600"></div>
+          Kingswood CS
+        </a>
+        <p class="mt-3 text-sm text-slate-500">
+          Computer Science curriculum and revision tools for Kingswood School students.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Learning</h3>
+        <ul class="mt-3 space-y-2 text-sm text-slate-500">
+          <li><a href="/digital-futures" class="hover:text-white transition-colors">Digital Futures</a></li>
+          <li><a href="/revision" class="hover:text-white transition-colors">Revision Hub</a></li>
+          <li><a href="/tools" class="hover:text-white transition-colors">Tools</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Teachers</h3>
+        <ul class="mt-3 space-y-2 text-sm text-slate-500">
+          <li><a href="/teacher/digital-futures" class="hover:text-white transition-colors">Manage Classes</a></li>
+          <li><a href="/teacher/digital-futures/stats" class="hover:text-white transition-colors">Student Progress</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Legal</h3>
+        <ul class="mt-3 space-y-2 text-sm text-slate-500">
+          <li><a href="/privacy" class="hover:text-white transition-colors">Privacy</a></li>
+          <li><a href="/terms" class="hover:text-white transition-colors">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 border-t border-white/8 pt-6 text-center text-sm text-slate-500">
+      <p>&copy; {year} Kingswood School. All rights reserved.</p>
+    </div>
+  </div>
+</footer>

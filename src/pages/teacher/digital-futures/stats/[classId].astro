@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Nav from '../../../../components/Nav.astro';
+import Footer from '../../../../components/Footer.astro';
+import { getUser } from '../../../../lib/supabase';
+
+const { user } = await getUser(Astro.request, Astro.cookies);
+
+if (!user) {
+  return Astro.redirect('/login');
+}
+
+const { classId } = Astro.params;
+---
+
+<BaseLayout
+  title="Class Statistics — Digital Futures"
+  description="View detailed statistics and progress for your Digital Futures class."
+>
+  <Nav />
+
+  <section class="px-4 py-24 sm:px-6 sm:py-32">
+    <div class="mx-auto max-w-6xl">
+      <div class="flex items-center justify-between mb-12">
+        <div>
+          <h1 class="text-5xl font-black text-white mb-2">Class Statistics</h1>
+          <p class="text-lg text-slate-400">Class {classId}</p>
+        </div>
+        <a href={`/teacher/digital-futures/class/${classId}`} class="text-cyan-400 hover:text-cyan-300 font-semibold">
+          ← Back to Class
+        </a>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <p class="text-sm text-slate-400 mb-2">Total Students</p>
+          <div class="text-3xl font-black text-cyan-400">0</div>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <p class="text-sm text-slate-400 mb-2">Avg. Completion</p>
+          <div class="text-3xl font-black text-purple-400">0%</div>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <p class="text-sm text-slate-400 mb-2">Avg. Quiz Score</p>
+          <div class="text-3xl font-black text-green-400">-</div>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <p class="text-sm text-slate-400 mb-2">Lessons Assigned</p>
+          <div class="text-3xl font-black text-amber-400">0</div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
+        <h2 class="text-2xl font-black text-white mb-6">Student Progress</h2>
+        <p class="text-slate-400">No student data available yet. Assign lessons and have students complete them to see progress here.</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,11 @@
+---
+// Handle sign-out
+
+import { getServerSupabase } from '../../lib/supabase';
+
+const supabase = getServerSupabase(Astro.request, Astro.cookies);
+await supabase.auth.signOut();
+
+// Redirect to homepage after sign-out
+return Astro.redirect('/');
+---

@@ -1,0 +1,62 @@
+---
+import { getServerSupabase, getProfile } from '../lib/supabase';
+
+const pathname = Astro.url.pathname;
+
+let user = null;
+let isTeacher = false;
+try {
+  const supabase = getServerSupabase(Astro.request, Astro.cookies);
+  const { data } = await supabase.auth.getUser();
+  user = data.user ?? null;
+  if (user) {
+    const profile = await getProfile(user.id, supabase);
+    isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
+  }
+} catch { /* not authenticated */ }
+
+function isActive(href: string) {
+  return pathname === href || (href !== '/' && pathname.startsWith(href));
+}
+---
+
+<header class="sticky top-0 z-50 border-b border-white/8 bg-[var(--nav-bg)] backdrop-blur-md">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 font-bold text-white">
+      <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600"></div>
+      Kingswood CS
+    </a>
+
+    <!-- Desktop links -->
+    <ul class="hidden items-center gap-0.5 md:flex">
+      <li><a href="/digital-futures" class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${isActive('/digital-futures') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>Digital Futures</a></li>
+      <li><a href="/revision" class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${isActive('/revision') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>Revision</a></li>
+      <li><a href="/tools" class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${isActive('/tools') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>Tools</a></li>
+    </ul>
+
+    <!-- Auth buttons -->
+    <div class="hidden items-center gap-2 md:flex">
+      {user ? (
+        <>
+          {isTeacher && <a href="/teacher/digital-futures" class="rounded-md px-3 py-1.5 text-sm font-semibold text-cyan-400 hover:text-white">🏫 Teacher</a>}
+          <a href="/dashboard" class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-white">Dashboard</a>
+          <form method="POST" action="/auth/signout" style="display:inline;">
+            <button type="submit" class="rounded-md border border-white/10 bg-white/5 px-4 py-1.5 text-sm font-semibold text-white hover:bg-white/10">Sign out</button>
+          </form>
+        </>
+      ) : (
+        <>
+          <a href="/login" class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-white">Log in</a>
+          <a href="/signup" class="rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-600 px-4 py-1.5 text-sm font-bold text-black hover:shadow-lg hover:shadow-cyan-500/50 transition-all">Sign up</a>
+        </>
+      )}
+    </div>
+
+    <!-- Mobile menu button -->
+    <button class="md:hidden flex items-center gap-2 text-slate-400 hover:text-white">
+      ☰
+    </button>
+  </nav>
+</header>

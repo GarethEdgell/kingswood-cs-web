@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout
+  title="Privacy Policy — Kingswood Computer Science"
+  description="How we protect your data and privacy."
+>
+  <Nav />
+
+  <section class="px-4 py-24 sm:px-6 sm:py-32">
+    <div class="mx-auto max-w-3xl prose prose-invert">
+      <h1 class="text-4xl font-black text-white">Privacy Policy</h1>
+      <p class="text-slate-400">Last updated: June 2026</p>
+
+      <h2 class="text-2xl font-bold text-white mt-8">Your Data</h2>
+      <p class="text-slate-300">
+        We collect minimal data: your name, school email, and learning progress on Digital Futures and revision materials.
+        All data is stored securely in Supabase with role-based access control.
+      </p>
+
+      <h2 class="text-2xl font-bold text-white mt-8">Microsoft Authentication</h2>
+      <p class="text-slate-300">
+        You sign in using your Kingswood Microsoft school account via Azure AD. We do not store your password.
+        Microsoft handles authentication; we only receive your verified identity.
+      </p>
+
+      <h2 class="text-2xl font-bold text-white mt-8">Your Rights</h2>
+      <p class="text-slate-300">
+        You can request a copy of your data, ask for corrections, or request deletion. Contact your teacher or school.
+      </p>
+
+      <h2 class="text-2xl font-bold text-white mt-8">Questions?</h2>
+      <p class="text-slate-300">
+        Speak to your teacher or school IT team about privacy concerns.
+      </p>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

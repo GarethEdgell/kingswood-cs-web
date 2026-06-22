@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { getUser } from '../lib/supabase';
+
+const { user } = await getUser(Astro.request, Astro.cookies);
+
+if (!user) {
+  return Astro.redirect('/login');
+}
+---
+
+<BaseLayout
+  title="Dashboard — Your Progress"
+  description="Track your Digital Futures lessons and revision progress."
+>
+  <Nav />
+
+  <section class="px-4 py-24 sm:px-6 sm:py-32">
+    <div class="mx-auto max-w-6xl">
+      <h1 class="text-5xl font-black text-white mb-12">Your Dashboard</h1>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <div class="text-3xl mb-2">✨</div>
+          <h3 class="font-bold text-white">Digital Futures Progress</h3>
+          <p class="text-slate-400 text-sm mt-2">0 / 34 lessons completed</p>
+          <div class="mt-4">
+            <a href="/digital-futures" class="text-cyan-400 hover:text-cyan-300 text-sm font-semibold">Continue →</a>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <div class="text-3xl mb-2">📚</div>
+          <h3 class="font-bold text-white">Revision</h3>
+          <p class="text-slate-400 text-sm mt-2">0 questions answered</p>
+          <div class="mt-4">
+            <a href="/revision" class="text-cyan-400 hover:text-cyan-300 text-sm font-semibold">Start revising →</a>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <div class="text-3xl mb-2">🏆</div>
+          <h3 class="font-bold text-white">Achievements</h3>
+          <p class="text-slate-400 text-sm mt-2">0 unlocked</p>
+          <div class="mt-4">
+            <p class="text-slate-500 text-sm">Complete lessons and quizzes to earn badges</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
+        <h2 class="text-2xl font-black text-white mb-4">Welcome, {user.user_metadata?.full_name || user.email}</h2>
+        <p class="text-slate-400">Your progress is saved automatically. Keep exploring!</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

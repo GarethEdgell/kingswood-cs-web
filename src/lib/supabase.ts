@@ -1,0 +1,52 @@
+import { createClient } from '@supabase/supabase-js';
+import { createServerClient, parseCookieHeader } from '@supabase/ssr';
+import type { AstroCookies } from 'astro';
+
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export function getServerSupabase(request: Request, cookies: AstroCookies) {
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return parseCookieHeader(request.headers.get('Cookie') ?? '');
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          cookies.set(name, value, options);
+        });
+      },
+    },
+  });
+}
+
+export function getServiceSupabase() {
+  const serviceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceKey) throw new Error('SUPABASE_SERVICE_ROLE_KEY not set');
+  return createClient(supabaseUrl, serviceKey, {
+    auth: { persistSession: false },
+  });
+}
+
+export async function getSession(request: Request, cookies: AstroCookies) {
+  const client = getServerSupabase(request, cookies);
+  const { data: { session } } = await client.auth.getSession();
+  return { session, client };
+}
+
+export async function getUser(request: Request, cookies: AstroCookies) {
+  const client = getServerSupabase(request, cookies);
+  const { data: { user } } = await client.auth.getUser();
+  return { user, client };
+}
+
+export async function getProfile(userId: string, supabaseClient: ReturnType<typeof getServerSupabase>) {
+  const { data } = await supabaseClient
+    .from('profiles')
+    .select('full_name, role, subscription_status')
+    .eq('id', userId)
+    .single();
+  return data ?? null;
+}

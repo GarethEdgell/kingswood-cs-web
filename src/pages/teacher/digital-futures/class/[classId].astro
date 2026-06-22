@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Nav from '../../../../components/Nav.astro';
+import Footer from '../../../../components/Footer.astro';
+import { getUser } from '../../../../lib/supabase';
+
+const { user } = await getUser(Astro.request, Astro.cookies);
+
+if (!user) {
+  return Astro.redirect('/login');
+}
+
+const { classId } = Astro.params;
+---
+
+<BaseLayout
+  title="Class Management — Digital Futures"
+  description="Manage your Digital Futures class, assign lessons, and track student progress."
+>
+  <Nav />
+
+  <section class="px-4 py-24 sm:px-6 sm:py-32">
+    <div class="mx-auto max-w-6xl">
+      <h1 class="text-5xl font-black text-white mb-4">Class {classId}</h1>
+      <p class="text-lg text-slate-400 mb-12">Digital Futures — Year 8</p>
+
+      <div class="grid gap-6 sm:grid-cols-3 mb-12">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+          <div class="text-4xl font-black text-cyan-400 mb-2">0</div>
+          <p class="text-slate-400">Students</p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+          <div class="text-4xl font-black text-purple-400 mb-2">0/17</div>
+          <p class="text-slate-400">Lessons Assigned</p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+          <div class="text-4xl font-black text-green-400 mb-2">-</div>
+          <p class="text-slate-400">Class Average</p>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
+        <h2 class="text-2xl font-black text-white mb-6">Students in Class</h2>
+        <p class="text-slate-400">No students enrolled yet. Share the class code with your students to add them.</p>
+
+        <div class="mt-6 p-4 rounded-lg bg-white/5 border border-white/10">
+          <p class="text-sm text-slate-400 mb-1">Class Code:</p>
+          <p class="text-2xl font-bold text-cyan-400 font-mono">{classId?.toUpperCase()}</p>
+        </div>
+      </div>
+
+      <div class="mt-12 border-t border-white/8 pt-12">
+        <h2 class="text-2xl font-black text-white mb-6">Quick Actions</h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <button class="rounded-lg bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/30 px-6 py-3 font-semibold transition-colors">
+            📋 Assign Lesson
+          </button>
+          <button class="rounded-lg bg-purple-500/20 border border-purple-500/50 text-purple-400 hover:bg-purple-500/30 px-6 py-3 font-semibold transition-colors">
+            📊 View Statistics
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

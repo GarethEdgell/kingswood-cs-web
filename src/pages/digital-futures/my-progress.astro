@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { getUser } from '../../lib/supabase';
+
+const { user } = await getUser(Astro.request, Astro.cookies);
+
+if (!user) {
+  return Astro.redirect('/login');
+}
+---
+
+<BaseLayout
+  title="My Progress — Digital Futures"
+  description="Track your Digital Futures journey. View completed lessons, quizzes, and projects."
+>
+  <Nav />
+
+  <section class="px-4 py-24 sm:px-6 sm:py-32">
+    <div class="mx-auto max-w-6xl">
+      <h1 class="text-5xl font-black text-white mb-4">📊 Your Digital Futures Progress</h1>
+      <p class="text-lg text-slate-400 mb-12">Year 8 & 9 — 34 lessons, 34 quizzes, 2 projects</p>
+
+      <div class="grid gap-6 sm:grid-cols-3 mb-12">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+          <div class="text-4xl font-black text-cyan-400 mb-2">0</div>
+          <p class="text-slate-400">Lessons Completed</p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+          <div class="text-4xl font-black text-purple-400 mb-2">0%</div>
+          <p class="text-slate-400">Overall Progress</p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
+          <div class="text-4xl font-black text-green-400 mb-2">0</div>
+          <p class="text-slate-400">Quiz Average</p>
+        </div>
+      </div>
+
+      <div class="border-t border-white/8 pt-12">
+        <h2 class="text-2xl font-black text-white mb-6">Year 8 Progress</h2>
+        <p class="text-slate-400 mb-4">17 lessons • 0 completed</p>
+        <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden mb-12">
+          <div class="h-full bg-gradient-to-r from-cyan-500 to-purple-600" style="width: 0%"></div>
+        </div>
+
+        <h2 class="text-2xl font-black text-white mb-6">Year 9 Progress</h2>
+        <p class="text-slate-400 mb-4">17 lessons • 0 completed</p>
+        <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-cyan-500 to-purple-600" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
