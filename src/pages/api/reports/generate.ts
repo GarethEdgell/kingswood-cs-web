@@ -93,48 +93,54 @@ const VARIANTS: [number, number, number, number][] = [
 ];
 
 function generateReport(
-  student: { name: string; completedLessons: string[]; weakLessons: string[]; strongLessons: string[] },
+  student: { name: string; bestScores: Record<string, number> },
   variantIndex: number,
 ): string {
   const firstName = student.name.split(' ')[0];
   const [a1i, a2i, i1i, i2i] = VARIANTS[variantIndex % 24];
 
-  function toEntry(lessonId: string, score: number): LessonEntry | null {
-    const info = LESSON_INFO[lessonId];
+  function toEntry([id, score]: [string, number]): LessonEntry | null {
+    const info = LESSON_INFO[id];
     if (!info?.objectives[0]) return null;
     return { title: info.title, score, skill: info.objectives[0] };
   }
 
-  const strong = student.strongLessons.map(id => toEntry(id, 4)).filter((x): x is LessonEntry => x !== null);
-  const weak = student.weakLessons.map(id => toEntry(id, 2)).filter((x): x is LessonEntry => x !== null);
-  const total = student.completedLessons.length;
+  const entries = Object.entries(student.bestScores);
+  const total = entries.length;
+
+  // Strong = score >= 4, weak = score <= 2, mid = 3. Highest/lowest first.
+  const strong = entries.filter(([, s]) => s >= 4).sort((a, b) => b[1] - a[1])
+    .map(toEntry).filter((x): x is LessonEntry => x !== null);
+  const weak = entries.filter(([, s]) => s <= 2).sort((a, b) => a[1] - b[1])
+    .map(toEntry).filter((x): x is LessonEntry => x !== null);
+  const mid = entries.filter(([, s]) => s === 3)
+    .map(toEntry).filter((x): x is LessonEntry => x !== null);
 
   const sentences: string[] = [];
 
-  // Sentence 1 — achievement
+  // Sentence 1 — first achievement
   if (strong.length > 0) {
     sentences.push(A1[a1i](firstName, strong[0]));
-  } else if (total > 0) {
-    const anyLesson = toEntry(student.completedLessons[0], 3);
-    sentences.push(anyLesson ? A1[a1i](firstName, anyLesson) : `${firstName} has started the Digital Futures course and is building their foundational digital skills.`);
+  } else if (mid.length > 0) {
+    sentences.push(A1[a1i](firstName, mid[0]));
   } else {
-    sentences.push(`${firstName} has enrolled in the Digital Futures course and is beginning their digital skills journey.`);
+    sentences.push(`${firstName} has started the Digital Futures course and is building their foundational digital skills.`);
   }
 
-  // Sentence 2 — second achievement or general
+  // Sentence 2 — second achievement or general progress
   if (strong.length > 1) {
     sentences.push(A2_SPECIFIC[a2i](firstName, strong[1]));
-  } else if (strong.length === 1 && total > 1) {
-    const other = student.completedLessons.find(id => id !== student.strongLessons[0]);
-    const otherEntry = other ? toEntry(other, 3) : null;
-    sentences.push(otherEntry ? A2_SPECIFIC[a2i](firstName, otherEntry) : A2_GENERAL[a2i](firstName, total));
+  } else if (strong.length === 1 && mid.length > 0) {
+    sentences.push(A2_SPECIFIC[a2i](firstName, mid[0]));
   } else {
     sentences.push(A2_GENERAL[a2i](firstName, total));
   }
 
-  // Sentence 3 — improvement
+  // Sentence 3 — first improvement
   if (weak.length > 0) {
     sentences.push(I1[i1i](firstName, weak[0]));
+  } else if (mid.length > 0) {
+    sentences.push(I1[i1i](firstName, mid[0]));
   } else if (strong.length > 0) {
     sentences.push(I1_EXT[i1i](firstName, strong[strong.length - 1]));
   } else {
@@ -144,6 +150,10 @@ function generateReport(
   // Sentence 4 — second improvement
   if (weak.length > 1) {
     sentences.push(I2[i2i](firstName, weak[1]));
+  } else if (weak.length === 1 && mid.length > 0) {
+    sentences.push(I2[i2i](firstName, mid[0]));
+  } else if (mid.length > 1) {
+    sentences.push(I2[i2i](firstName, mid[1]));
   } else if (strong.length > 1) {
     sentences.push(I2_EXT[i2i](firstName, strong.length > 2 ? strong[strong.length - 2] : strong[0]));
   } else {
@@ -180,45 +190,47 @@ export async function POST({ request, cookies }: { request: Request; cookies: an
   const profileById: Record<string, any> = {};
   for (const p of profiles) profileById[p.id] = p;
 
-  // Get progress records for all students in the class
-  const progressRecords = await restSelect(
-    'student_progress',
-    `student_id=in.(${studentIds.join(',')})&select=student_id,course_id,lessons_completed,quizzes_taken,avg_quiz_score`,
+  // Preferred: per-lesson scores from student_lesson_progress (gives topic-rich reports)
+  const lessonProgress = await restSelect(
+    'student_lesson_progress',
+    `student_id=in.(${studentIds.join(',')})&select=student_id,lesson_id,score`,
     accessToken
   );
 
-  // Build per-student data from progress records
+  // Fallback aggregate progress (used only if no per-lesson rows exist)
+  const progressRecords = await restSelect(
+    'student_progress',
+    `student_id=in.(${studentIds.join(',')})&select=student_id,course_id,lessons_completed,avg_quiz_score`,
+    accessToken
+  );
+
+  // Build per-student data
   const studentData = studentIds.map((sid: string) => {
     const p = profileById[sid];
     const name = p?.full_name || p?.email?.split('@')[0] || 'Student';
-    const progress = progressRecords.filter((pr: any) => pr.student_id === sid);
 
-    // Get lessons from the digital futures course progress
-    const dfProgress = progress.find((p: any) => p.course_id === 'digital-futures');
-    const lessonsCompleted = dfProgress?.lessons_completed ?? 0;
-    const avgScore = dfProgress?.avg_quiz_score ?? 0;
+    // Build bestScores map from per-lesson rows (keep highest score per lesson)
+    const bestScores: Record<string, number> = {};
+    for (const lp of lessonProgress.filter((r: any) => r.student_id === sid)) {
+      if ((bestScores[lp.lesson_id] ?? -1) < lp.score) bestScores[lp.lesson_id] = lp.score;
+    }
 
-    // Build lesson lists based on progress data
-    // Map lesson IDs from the Digital Futures curriculum
-    const allLessonIds = Object.keys(LESSON_INFO);
-    const completedLessonIds = allLessonIds.slice(0, Math.min(lessonsCompleted, allLessonIds.length));
+    // Fallback: synthesise from aggregate if no per-lesson data
+    if (Object.keys(bestScores).length === 0) {
+      const dfProgress = progressRecords.find((pr: any) => pr.student_id === sid && pr.course_id === 'digital-futures');
+      const lessonsCompleted = dfProgress?.lessons_completed ?? 0;
+      const avgScore = dfProgress?.avg_quiz_score ?? 0;
+      const allLessonIds = Object.keys(LESSON_INFO).slice(0, Math.min(lessonsCompleted, Object.keys(LESSON_INFO).length));
+      // Map a 0-100 average to a 0-5 score
+      const proxyScore = Math.round((avgScore / 100) * 5);
+      for (const id of allLessonIds) bestScores[id] = proxyScore;
+    }
 
-    // Determine strong/weak based on avg score as proxy
-    const strongLessons = avgScore >= 75 ? completedLessonIds.slice(0, Math.ceil(completedLessonIds.length * 0.6)) : [];
-    const weakLessons = avgScore < 60 ? completedLessonIds.slice(0, Math.ceil(completedLessonIds.length * 0.4)) : [];
-
-    return {
-      name,
-      completedLessons: completedLessonIds,
-      strongLessons,
-      weakLessons,
-      lessonsCompleted,
-      avgScore,
-    };
+    return { name, bestScores };
   });
 
   const studentsWithData = studentData
-    .filter(s => s.lessonsCompleted > 0)
+    .filter(s => Object.keys(s.bestScores).length > 0)
     .sort((a, b) => a.name.localeCompare(b.name));
 
   if (studentsWithData.length === 0) {
