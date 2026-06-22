@@ -10,7 +10,8 @@ try {
   const { user: authUser, client } = await getUser(Astro.request, Astro.cookies);
   user = authUser ?? null;
   if (user) {
-    const profile = await getProfile(user.id, client);
+    const accessToken = Astro.cookies.get('sb-access-token')?.value;
+    const profile = await getProfile(user.id, client, accessToken);
     isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
   }
 } catch (err) {

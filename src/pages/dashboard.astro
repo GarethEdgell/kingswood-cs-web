@@ -11,7 +11,8 @@ if (!user) {
   return Astro.redirect('/login');
 }
 
-const profile = await getProfile(user.id, supabase);
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const profile = await getProfile(user.id, supabase, accessToken);
 
 // Redirect teachers to their dashboard
 if (profile?.role === 'teacher' || profile?.role === 'admin') {

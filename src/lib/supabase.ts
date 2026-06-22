@@ -71,17 +71,39 @@ export async function getUser(request: Request, cookies: AstroCookies) {
   return { user: null, client };
 }
 
-export async function getProfile(userId: string, _supabaseClient?: any) {
-  // Always use service role for profile lookups — the regular client may not
-  // have a session when using our custom cookie auth, causing RLS to block it.
+export async function getProfile(userId: string, _supabaseClient?: any, accessToken?: string) {
+  // Use service role if available, otherwise fall back to direct REST with access token
   try {
-    const admin = getServiceSupabase();
-    const { data } = await admin
-      .from('profiles')
-      .select('full_name, role, subscription_status')
-      .eq('id', userId)
-      .single();
-    return data ?? null;
+    const serviceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (serviceKey) {
+      const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
+      const { data } = await admin
+        .from('profiles')
+        .select('full_name, role, subscription_status')
+        .eq('id', userId)
+        .single();
+      return data ?? null;
+    }
+
+    // Fallback: use access token directly if provided
+    if (accessToken) {
+      const res = await fetch(
+        `${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=full_name,role,subscription_status&limit=1`,
+        {
+          headers: {
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${accessToken}`,
+            Accept: 'application/json',
+          },
+        }
+      );
+      if (res.ok) {
+        const rows = await res.json();
+        return rows[0] ?? null;
+      }
+    }
+
+    return null;
   } catch {
     return null;
   }

@@ -8,7 +8,8 @@ const { user, client: supabase } = await getUser(Astro.request, Astro.cookies);
 
 if (!user) return Astro.redirect('/login');
 
-const profile = await getProfile(user.id, supabase);
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const profile = await getProfile(user.id, supabase, accessToken);
 if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
   return Astro.redirect('/dashboard');
 }
