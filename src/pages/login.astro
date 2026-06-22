@@ -68,8 +68,27 @@ import Footer from '../components/Footer.astro';
   const supabaseUrl = 'https://fwudtosslyvtzqxztohl.supabase.co';
   const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dWR0b3NzbHl2dHpxeHp0b2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxNTU3NTEsImV4cCI6MjA1MjczMTc1MX0.XVh4cMLmZCcIuM82xobBzEhf7gQj_o4_b89DSA5RmDs';
 
+  async function waitForSupabase() {
+    return new Promise((resolve) => {
+      if (window.supabase?.createClient) {
+        resolve();
+        return;
+      }
+      const checkInterval = setInterval(() => {
+        if (window.supabase?.createClient) {
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100);
+      setTimeout(() => clearInterval(checkInterval), 5000);
+    });
+  }
+
   async function initLogin() {
     console.log('🚀 Login script initialized');
+
+    await waitForSupabase();
+    console.log('✅ Supabase loaded');
 
     const form = document.getElementById('loginForm');
     const errorDiv = document.getElementById('error');
@@ -95,14 +114,6 @@ import Footer from '../components/Footer.astro';
 
       try {
         const { createClient } = window.supabase;
-
-        if (!createClient) {
-          console.error('❌ Supabase not loaded');
-          errorDiv.textContent = 'Supabase library not loaded';
-          errorDiv.classList.remove('hidden');
-          return;
-        }
-
         const client = createClient(supabaseUrl, supabaseAnonKey);
         console.log('🔄 Calling signInWithPassword...');
 
