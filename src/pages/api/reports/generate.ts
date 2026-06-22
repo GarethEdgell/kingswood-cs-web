@@ -22,21 +22,21 @@ const lc = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 // ── 6 variants per sentence slot ─────────────────────────────────────────────
 
 const A1: Array<(n: string, l: LessonEntry) => string> = [
-  (n, l) => `${n} has shown strong ability in ${l.title}, where they can ${lc(l.skill)}.`,
-  (n, l) => `Scoring highly in ${l.title}, ${n} can confidently ${lc(l.skill)}.`,
-  (n, l) => `${l.title} is a clear strength — ${n} has mastered how to ${lc(l.skill)}.`,
-  (n, l) => `In ${l.title}, ${n} demonstrated they can ${lc(l.skill)}.`,
-  (n, l) => `One standout area is ${l.title}, where ${n} has learned to ${lc(l.skill)}.`,
-  (n, l) => `${n}'s strongest result is ${l.title}, where they proved they can ${lc(l.skill)}.`,
+  (n, l) => `${n} has shown strong ability in ${l.title} and can confidently ${lc(l.skill)}.`,
+  (n, l) => `Scoring highly in ${l.title}, ${n} can ${lc(l.skill)}.`,
+  (n, l) => `${l.title} is a clear strength — ${n} has learned to ${lc(l.skill)}.`,
+  (n, l) => `In ${l.title}, ${n} demonstrated that they can ${lc(l.skill)}.`,
+  (n, l) => `One standout area is ${l.title}, where ${n} can confidently ${lc(l.skill)}.`,
+  (n, l) => `${n}'s strongest area is ${l.title}, where they have shown they can ${lc(l.skill)}.`,
 ];
 
 const A2_SPECIFIC: Array<(n: string, l: LessonEntry) => string> = [
-  (n, l) => `They have also developed the ability to ${lc(l.skill)} through ${l.title}.`,
+  (n, l) => `Their work in ${l.title} shows they can also ${lc(l.skill)}.`,
   (n, l) => `${l.title} is another solid area, where ${n} can ${lc(l.skill)}.`,
-  (n, l) => `Good work in ${l.title} shows their ability to ${lc(l.skill)}.`,
-  (n, l) => `${n} has also shown they can ${lc(l.skill)}, reflected in their ${l.title} performance.`,
-  (n, l) => `Their work in ${l.title} shows ${n} can ${lc(l.skill)}.`,
-  (n, l) => `${n} performed well in ${l.title}, further confirming they can ${lc(l.skill)}.`,
+  (n, l) => `Good work in ${l.title} shows that ${n} can ${lc(l.skill)}.`,
+  (n, l) => `${n} has also shown, through ${l.title}, that they can ${lc(l.skill)}.`,
+  (n, l) => `In ${l.title}, ${n} demonstrated they can also ${lc(l.skill)}.`,
+  (n, l) => `${n} performed well in ${l.title} and can ${lc(l.skill)}.`,
 ];
 
 const A2_GENERAL: Array<(n: string, count: number) => string> = [
@@ -49,39 +49,39 @@ const A2_GENERAL: Array<(n: string, count: number) => string> = [
 ];
 
 const I1: Array<(n: string, l: LessonEntry) => string> = [
-  (n, l) => `${n} should revisit ${l.title} to further develop the ability to ${lc(l.skill)}.`,
-  (n, l) => `The priority area for ${n} is ${l.title} — they should keep working on ${lc(l.skill)}.`,
-  (n, l) => `${n} needs to develop their ability to ${lc(l.skill)} — revisiting ${l.title} would help.`,
-  (n, l) => `To improve, ${n} should focus on ${l.title} — specifically on ${lc(l.skill)}.`,
-  (n, l) => `${l.title} is where ${n} has the most to gain — more practice on ${lc(l.skill)} is recommended.`,
-  (n, l) => `${n}'s main target is ${l.title}, where they should work on ${lc(l.skill)}.`,
+  (n, l) => `${n} should revisit ${l.title}, where they still need to ${lc(l.skill)}.`,
+  (n, l) => `The priority area for ${n} is ${l.title}, where they should keep working until they can ${lc(l.skill)}.`,
+  (n, l) => `${n} found ${l.title} more challenging and should practise until they can ${lc(l.skill)}.`,
+  (n, l) => `To improve, ${n} should focus on ${l.title} and learn to ${lc(l.skill)}.`,
+  (n, l) => `${l.title} is where ${n} has the most to gain — the goal is to ${lc(l.skill)}.`,
+  (n, l) => `${n}'s main target is ${l.title}, where they need to be able to ${lc(l.skill)}.`,
 ];
 
 const I1_EXT: Array<(n: string, l: LessonEntry) => string> = [
-  (n, l) => `To push further, ${n} should aim to deepen their understanding in ${l.title} by ${lc(l.skill)}.`,
-  (n, l) => `${n}'s next challenge is to build on ${lc(l.skill)} from ${l.title} in more complex contexts.`,
-  (n, l) => `${n} could stretch further in ${l.title} by applying ${lc(l.skill)} at a higher level.`,
-  (n, l) => `The next step for ${n} is to extend ${lc(l.skill)} beyond ${l.title} into new situations.`,
-  (n, l) => `${n} should now push to master ${lc(l.skill)} at a deeper level through the ${l.title} extension work.`,
-  (n, l) => `Building on ${l.title}, ${n} should challenge themselves to ${lc(l.skill)} in unfamiliar contexts.`,
+  (n, l) => `To push further, ${n} should deepen their ${l.title} work and aim to ${lc(l.skill)} in more complex contexts.`,
+  (n, l) => `${n}'s next challenge in ${l.title} is to ${lc(l.skill)} at a higher level.`,
+  (n, l) => `${n} could stretch further in ${l.title} and aim to ${lc(l.skill)} in unfamiliar situations.`,
+  (n, l) => `The next step for ${n} is to ${lc(l.skill)} beyond what ${l.title} covered.`,
+  (n, l) => `${n} has mastered ${l.title} and should now confidently ${lc(l.skill)} independently.`,
+  (n, l) => `Building on ${l.title}, ${n} should challenge themselves to ${lc(l.skill)} in new contexts.`,
 ];
 
 const I2: Array<(n: string, l: LessonEntry) => string> = [
-  (n, l) => `${l.title} is a second area to address — ${n} should practise ${lc(l.skill)}.`,
-  (n, l) => `In ${l.title}, ${n} should focus on developing ${lc(l.skill)}.`,
-  (n, l) => `${n} would also benefit from revisiting ${l.title} to strengthen ${lc(l.skill)}.`,
-  (n, l) => `A second focus area is ${l.title}, where ${n} needs to work on ${lc(l.skill)}.`,
-  (n, l) => `${n} should also target ${l.title}, working to improve ${lc(l.skill)}.`,
-  (n, l) => `${l.title} is another area for development — ${n} should work specifically on ${lc(l.skill)}.`,
+  (n, l) => `${l.title} is a second area to develop, where ${n} should learn to ${lc(l.skill)}.`,
+  (n, l) => `In ${l.title}, ${n} should keep working until they can ${lc(l.skill)}.`,
+  (n, l) => `${n} would also benefit from revisiting ${l.title} to ${lc(l.skill)} more confidently.`,
+  (n, l) => `A second focus is ${l.title}, where ${n} needs to ${lc(l.skill)}.`,
+  (n, l) => `${n} should also target ${l.title} and practise until they can ${lc(l.skill)}.`,
+  (n, l) => `${l.title} is another area for development — ${n} should aim to ${lc(l.skill)}.`,
 ];
 
 const I2_EXT: Array<(n: string, l: LessonEntry) => string> = [
-  (n, l) => `They should also continue building on ${lc(l.skill)} from ${l.title} to reach a higher standard.`,
-  (n, l) => `In ${l.title}, ${n} can also look to refine ${lc(l.skill)} at a more advanced level.`,
-  (n, l) => `Continuing to develop ${lc(l.skill)} through ${l.title} will help ${n} push for top marks.`,
-  (n, l) => `${n} should use ${l.title} to further develop ${lc(l.skill)} beyond the basics.`,
-  (n, l) => `The ${l.title} extension activities would help ${n} deepen ${lc(l.skill)}.`,
-  (n, l) => `${n} is ready to push ${lc(l.skill)} further — the ${l.title} stretch tasks are the right next step.`,
+  (n, l) => `They should also extend their ${l.title} work and look to ${lc(l.skill)} at a deeper level.`,
+  (n, l) => `In ${l.title}, ${n} can also refine how they ${lc(l.skill)}.`,
+  (n, l) => `Continuing their strong ${l.title} work, ${n} should aim to ${lc(l.skill)} in new contexts.`,
+  (n, l) => `${n} should use ${l.title} as a springboard to ${lc(l.skill)} more ambitiously.`,
+  (n, l) => `The ${l.title} extension tasks would help ${n} to ${lc(l.skill)} to an even higher standard.`,
+  (n, l) => `${n} is ready to ${lc(l.skill)} beyond the scope of ${l.title}.`,
 ];
 
 // 24 unique combinations ensuring no two adjacent students share all patterns
