@@ -2,10 +2,6 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import SignupForm from '../components/SignupForm.svelte';
-
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 ---
 
 <BaseLayout
@@ -19,7 +15,44 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       <h1 class="text-4xl font-black text-white mb-8 text-center">Sign Up</h1>
 
       <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
-        <SignupForm client:load {supabaseUrl} {supabaseAnonKey} />
+        <form id="signupForm" class="space-y-4">
+          <div>
+            <label for="email" class="block text-sm font-semibold text-slate-300 mb-2">Email</label>
+            <input
+              type="email"
+              id="email"
+              required
+              class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              placeholder="name@student.kingswood.edu"
+            />
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-semibold text-slate-300 mb-2">Password</label>
+            <input
+              type="password"
+              id="password"
+              required
+              minlength="8"
+              class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              placeholder="At least 8 characters"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-600 text-black font-bold py-3 hover:shadow-lg hover:shadow-cyan-500/50 transition-all"
+          >
+            Create Account
+          </button>
+
+          <div id="error" class="text-red-400 text-sm text-center hidden"></div>
+        </form>
+
+        <div class="mt-6 pt-6 border-t border-white/8 text-center">
+          <p class="text-slate-400 text-sm">Already have an account?</p>
+          <a href="/login" class="text-cyan-400 hover:text-cyan-300 font-semibold">Log in →</a>
+        </div>
       </div>
 
       <p class="text-slate-500 text-sm text-center mt-6">
@@ -31,3 +64,92 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
   <Footer />
 </BaseLayout>
 
+<script is:inline>
+  const supabaseUrl = 'https://fwudtosslyvtzqxztohl.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dWR0b3NzbHl2dHpxeHp0b2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxNTU3NTEsImV4cCI6MjA1MjczMTc1MX0.XVh4cMLmZCcIuM82xobBzEhf7gQj_o4_b89DSA5RmDs';
+
+  async function initSignup() {
+    console.log('🚀 Signup script initialized');
+
+    const form = document.getElementById('signupForm');
+    const errorDiv = document.getElementById('error');
+
+    if (!form) {
+      console.error('❌ Form not found');
+      return;
+    }
+
+    console.log('✅ Form found, attaching listener');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      console.log('📝 Signup form submitted');
+
+      errorDiv.classList.add('hidden');
+      errorDiv.textContent = '';
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (password.length < 8) {
+        errorDiv.textContent = 'Password must be at least 8 characters';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      console.log('📧 Creating account:', email);
+
+      try {
+        const { createClient } = window.supabase;
+
+        if (!createClient) {
+          console.error('❌ Supabase not loaded');
+          errorDiv.textContent = 'Supabase library not loaded';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        const client = createClient(supabaseUrl, supabaseAnonKey);
+        console.log('🔄 Calling signUp...');
+
+        const { data, error } = await client.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${location.origin}/auth/callback`,
+          },
+        });
+
+        console.log('Response:', { data, error });
+
+        if (error) {
+          console.error('❌ Signup error:', error.message);
+          errorDiv.textContent = error.message;
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        console.log('✅ Signup successful!');
+        errorDiv.classList.remove('hidden');
+        errorDiv.classList.add('text-green-400');
+        errorDiv.textContent = 'Account created! Redirecting to login...';
+
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      } catch (err) {
+        console.error('❌ Exception:', err);
+        errorDiv.textContent = err.message || 'An error occurred';
+        errorDiv.classList.remove('hidden');
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initSignup);
+  if (document.readyState === 'loading') {
+    console.log('⏳ Waiting for DOM...');
+  } else {
+    console.log('✅ DOM ready, initializing');
+    initSignup();
+  }
+</script>
