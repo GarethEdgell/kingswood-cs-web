@@ -51,13 +51,16 @@ const { classId } = Astro.params;
 
       <div class="mt-12 border-t border-white/8 pt-12">
         <h2 class="text-2xl font-black text-white mb-6">Quick Actions</h2>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <button class="rounded-lg bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/30 px-6 py-3 font-semibold transition-colors">
+        <div class="grid gap-4 sm:grid-cols-3">
+          <a href={`/teacher/digital-futures/class/${classId}/students`} class="rounded-lg bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/30 px-6 py-3 font-semibold transition-colors text-center">
+            📚 Manage Courses
+          </a>
+          <button class="rounded-lg bg-purple-500/20 border border-purple-500/50 text-purple-400 hover:bg-purple-500/30 px-6 py-3 font-semibold transition-colors">
             📋 Assign Lesson
           </button>
-          <button class="rounded-lg bg-purple-500/20 border border-purple-500/50 text-purple-400 hover:bg-purple-500/30 px-6 py-3 font-semibold transition-colors">
+          <a href={`/teacher/digital-futures/stats/${classId}`} class="rounded-lg bg-green-500/20 border border-green-500/50 text-green-400 hover:bg-green-500/30 px-6 py-3 font-semibold transition-colors text-center">
             📊 View Statistics
-          </button>
+          </a>
         </div>
       </div>
     </div>

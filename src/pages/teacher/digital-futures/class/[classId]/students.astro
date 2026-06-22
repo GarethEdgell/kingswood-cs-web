@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import Nav from '../../../../../components/Nav.astro';
+import Footer from '../../../../../components/Footer.astro';
+import { getUser } from '../../../../../lib/supabase';
+import { COURSES } from '../../../../../data/courses';
+
+const { user } = await getUser(Astro.request, Astro.cookies);
+
+if (!user) {
+  return Astro.redirect('/login');
+}
+
+const { classId } = Astro.params;
+---
+
+<BaseLayout
+  title="Manage Class Access — Digital Futures"
+  description="Give students access to courses (Digital Futures, OCR GCSE, OCR A Level) via checkboxes."
+>
+  <Nav />
+
+  <section class="px-4 py-24 sm:px-6 sm:py-32">
+    <div class="mx-auto max-w-4xl">
+      <div class="mb-12">
+        <h1 class="text-4xl font-black text-white mb-2">Manage Course Access</h1>
+        <p class="text-lg text-slate-400">Class {classId}</p>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
+        <h2 class="text-2xl font-bold text-white mb-6">Available Courses</h2>
+        <p class="text-slate-400 mb-8">Select which courses students in this class can access. They'll appear in the student dashboard under "Learning".</p>
+
+        <form id="courseAccessForm" class="space-y-6">
+          {COURSES.map(course => (
+            <label class="flex items-start gap-4 p-4 rounded-lg border border-white/10 hover:bg-white/5 cursor-pointer transition-colors">
+              <input
+                type="checkbox"
+                name="courses"
+                value={course.id}
+                class="mt-1 w-5 h-5 rounded border-white/20 bg-white/10 accent-cyan-500 cursor-pointer"
+              />
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-xl">{course.icon}</span>
+                  <h3 class="font-bold text-white">{course.name}</h3>
+                  {course.badge && (
+                    <span class="text-xs bg-white/10 text-slate-400 px-2 py-1 rounded">
+                      {course.badge}
+                    </span>
+                  )}
+                </div>
+                <p class="text-sm text-slate-400">{course.description}</p>
+                <p class="text-xs text-slate-500 mt-2 italic">
+                  Category: <span style={`color: ${course.color}`}>{course.category}</span>
+                </p>
+              </div>
+            </label>
+          ))}
+        </form>
+
+        <div class="mt-8 pt-8 border-t border-white/8 flex gap-4">
+          <button
+            type="submit"
+            form="courseAccessForm"
+            class="rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-600 text-black font-bold px-6 py-3 hover:shadow-lg hover:shadow-cyan-500/50 transition-all"
+          >
+            Save Course Access
+          </button>
+          <a
+            href={`/teacher/digital-futures/class/${classId}`}
+            class="rounded-lg border border-white/20 text-white font-semibold px-6 py-3 hover:bg-white/5 transition-colors"
+          >
+            Back to Class
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-12 p-6 rounded-lg bg-blue-500/10 border border-blue-500/30">
+        <h3 class="text-sm font-bold text-blue-300 mb-2">💡 How it works</h3>
+        <p class="text-sm text-blue-200">
+          Students in this class will see the selected courses in their dashboard. They can access course materials like Digital Futures lessons, OCR revision questions, and interactive tools based on what you've enabled here.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  // Handle form submission
+  const form = document.getElementById('courseAccessForm') as HTMLFormElement;
+  const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+  if (form) {
+    submitBtn?.addEventListener('click', async () => {
+      const checkboxes = form.querySelectorAll('input[type="checkbox"]:checked') as NodeListOf<HTMLInputElement>;
+      const selectedCourses = Array.from(checkboxes).map(cb => cb.value);
+
+      // TODO: Save to Supabase
+      console.log('Selected courses:', selectedCourses);
+      alert(`Saved! Students can now access: ${selectedCourses.join(', ')}`);
+    });
+  }
+</script>
