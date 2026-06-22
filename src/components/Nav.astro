@@ -1,5 +1,5 @@
 ---
-import { getServerSupabase, getProfile } from '../lib/supabase';
+import { getUser, getProfile } from '../lib/supabase';
 import { COURSES, getCoursesByCategory } from '../data/courses';
 
 const pathname = Astro.url.pathname;
@@ -7,14 +7,15 @@ const pathname = Astro.url.pathname;
 let user = null;
 let isTeacher = false;
 try {
-  const supabase = getServerSupabase(Astro.request, Astro.cookies);
-  const { data } = await supabase.auth.getUser();
-  user = data.user ?? null;
+  const { user: authUser, client } = await getUser(Astro.request, Astro.cookies);
+  user = authUser ?? null;
   if (user) {
-    const profile = await getProfile(user.id, supabase);
+    const profile = await getProfile(user.id, client);
     isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
   }
-} catch { /* not authenticated */ }
+} catch (err) {
+  console.log('Nav auth check failed:', err);
+}
 
 function isActive(href: string) {
   return pathname === href || (href !== '/' && pathname.startsWith(href));
