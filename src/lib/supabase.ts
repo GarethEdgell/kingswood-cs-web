@@ -71,27 +71,28 @@ export async function getUser(request: Request, cookies: AstroCookies) {
   return { user: null, client };
 }
 
-export async function getProfile(userId: string, _supabaseClient?: any, accessToken?: string) {
-  // Use direct REST fetch with the user's access token — works reliably on Vercel
-  if (accessToken) {
-    try {
-      const res = await fetch(
-        `${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=full_name,role&limit=1`,
-        {
-          headers: {
-            apikey: supabaseAnonKey,
-            Authorization: `Bearer ${accessToken}`,
-            Accept: 'application/json',
-          },
-        }
-      );
-      if (res.ok) {
-        const rows = await res.json();
-        return rows[0] ?? null;
-      }
-    } catch (e) {
-      console.error('Profile fetch error:', e);
-    }
+// Generic authenticated REST query against Supabase using the user's access token.
+// Works reliably on Vercel where the session-less SSR client returns nothing.
+export async function restSelect(table: string, query: string, accessToken?: string): Promise<any[]> {
+  if (!accessToken) return [];
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/${table}?${query}`, {
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+      },
+    });
+    if (res.ok) return await res.json();
+    console.error(`restSelect ${table} failed:`, res.status, await res.text());
+    return [];
+  } catch (e) {
+    console.error(`restSelect ${table} error:`, e);
+    return [];
   }
-  return null;
+}
+
+export async function getProfile(userId: string, _supabaseClient?: any, accessToken?: string) {
+  const rows = await restSelect('profiles', `id=eq.${userId}&select=full_name,role&limit=1`, accessToken);
+  return rows[0] ?? null;
 }

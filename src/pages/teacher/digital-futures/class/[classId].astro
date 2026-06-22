@@ -3,13 +3,14 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import Nav from '../../../../components/Nav.astro';
 import Footer from '../../../../components/Footer.astro';
 import ReportGenerator from '../../../../components/teacher/ReportGenerator.svelte';
-import { getUser, getProfile } from '../../../../lib/supabase';
+import { getUser, getProfile, restSelect } from '../../../../lib/supabase';
 
-const { user, client: supabase } = await getUser(Astro.request, Astro.cookies);
+const { user } = await getUser(Astro.request, Astro.cookies);
 
 if (!user) return Astro.redirect('/login');
 
-const profile = await getProfile(user.id, supabase);
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const profile = await getProfile(user.id, null, accessToken);
 if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
   return Astro.redirect('/dashboard');
 }
@@ -17,37 +18,41 @@ if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
 const { classId } = Astro.params;
 
 // Fetch class details
-const { data: cls } = await supabase
-  .from('classes')
-  .select('id, name, code, year_group, description')
-  .eq('id', classId)
-  .eq('teacher_id', user.id)
-  .single();
+const classRows = await restSelect(
+  'classes',
+  `id=eq.${classId}&teacher_id=eq.${user.id}&select=id,name,code,year_group,description&limit=1`,
+  accessToken
+);
+const cls = classRows[0];
 
 if (!cls) return Astro.redirect('/teacher/digital-futures');
 
 // Fetch students in class
-const { data: classStudents } = await supabase
-  .from('class_students')
-  .select('student_id, profiles(full_name, email)')
-  .eq('class_id', classId);
+const classStudents = await restSelect('class_students', `class_id=eq.${classId}&select=student_id`, accessToken);
+const studentIds = classStudents.map((cs: any) => cs.student_id);
 
-const students = (classStudents ?? []).map((cs: any) => ({
-  id: cs.student_id,
-  name: cs.profiles?.full_name || cs.profiles?.email || 'Unknown',
+// Fetch profiles for those students
+const profiles = studentIds.length > 0
+  ? await restSelect('profiles', `id=in.(${studentIds.join(',')})&select=id,full_name,email`, accessToken)
+  : [];
+const profileById: Record<string, any> = {};
+for (const p of profiles) profileById[p.id] = p;
+
+const students = studentIds.map((id: string) => ({
+  id,
+  name: profileById[id]?.full_name || profileById[id]?.email || 'Unknown',
 }));
 
 // Fetch progress for all students
-const studentIds = students.map((s: any) => s.id);
-const { data: progressRecords } = studentIds.length > 0
-  ? await supabase.from('student_progress').select('*').in('student_id', studentIds)
-  : { data: [] };
+const progressRecords = studentIds.length > 0
+  ? await restSelect('student_progress', `student_id=in.(${studentIds.join(',')})&select=*`, accessToken)
+  : [];
 
-const avgScore = progressRecords?.length
+const avgScore = progressRecords.length
   ? Math.round(progressRecords.reduce((sum: number, p: any) => sum + (p.avg_quiz_score ?? 0), 0) / progressRecords.length)
   : null;
 
-const totalLessons = progressRecords?.length
+const totalLessons = progressRecords.length
   ? Math.round(progressRecords.reduce((sum: number, p: any) => sum + (p.lessons_completed ?? 0), 0) / progressRecords.length)
   : 0;
 ---

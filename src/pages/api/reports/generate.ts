@@ -5,7 +5,7 @@ export const prerender = false;
 // 24 distinct sentence-pattern combinations ensure no two students in the same
 // class receive similar-sounding reports.
 
-import { getUser, getProfile } from '../../../lib/supabase';
+import { getUser, getProfile, restSelect } from '../../../lib/supabase';
 import { DF_UNITS } from '../../../data/digitalFutures';
 
 // ── Curriculum lookups ────────────────────────────────────────────────────────
@@ -154,40 +154,44 @@ function generateReport(
 }
 
 export async function POST({ request, cookies }: { request: Request; cookies: any }) {
-  const { user, client: supabase } = await getUser(request, cookies);
+  const { user } = await getUser(request, cookies);
   if (!user) return json({ error: 'Unauthorised' }, 401);
 
-  const profile = await getProfile(user.id, supabase);
+  const accessToken = cookies.get('sb-access-token')?.value;
+  const profile = await getProfile(user.id, null, accessToken);
   if (profile?.role !== 'teacher' && profile?.role !== 'admin') return json({ error: 'Forbidden' }, 403);
 
   const { classId } = await request.json();
   if (!classId) return json({ error: 'Missing classId' }, 400);
 
   // Verify the class belongs to this teacher
-  const { data: cls } = await supabase
-    .from('classes').select('id, name').eq('id', classId).eq('teacher_id', user.id).single();
+  const classRows = await restSelect('classes', `id=eq.${classId}&teacher_id=eq.${user.id}&select=id,name&limit=1`, accessToken);
+  const cls = classRows[0];
   if (!cls) return json({ error: 'Class not found or not your class' }, 404);
 
-  // Get students in class with their profiles
-  const { data: classStudents } = await supabase
-    .from('class_students')
-    .select('student_id, profiles(full_name, email)')
-    .eq('class_id', classId);
+  // Get students in class
+  const classStudents = await restSelect('class_students', `class_id=eq.${classId}&select=student_id`, accessToken);
+  if (!classStudents.length) return json({ error: 'No students in this class' }, 400);
 
-  if (!classStudents?.length) return json({ error: 'No students in this class' }, 400);
+  const studentIds = classStudents.map((cs: any) => cs.student_id);
+
+  // Get profiles for those students
+  const profiles = await restSelect('profiles', `id=in.(${studentIds.join(',')})&select=id,full_name,email`, accessToken);
+  const profileById: Record<string, any> = {};
+  for (const p of profiles) profileById[p.id] = p;
 
   // Get progress records for all students in the class
-  const studentIds = classStudents.map((cs: any) => cs.student_id);
-  const { data: progressRecords } = await supabase
-    .from('student_progress')
-    .select('student_id, course_id, lessons_completed, quizzes_taken, avg_quiz_score')
-    .in('student_id', studentIds);
+  const progressRecords = await restSelect(
+    'student_progress',
+    `student_id=in.(${studentIds.join(',')})&select=student_id,course_id,lessons_completed,quizzes_taken,avg_quiz_score`,
+    accessToken
+  );
 
   // Build per-student data from progress records
-  const studentData = classStudents.map((cs: any) => {
-    const profile = cs.profiles;
-    const name = profile?.full_name || profile?.email?.split('@')[0] || 'Student';
-    const progress = (progressRecords ?? []).filter((p: any) => p.student_id === cs.student_id);
+  const studentData = studentIds.map((sid: string) => {
+    const p = profileById[sid];
+    const name = p?.full_name || p?.email?.split('@')[0] || 'Student';
+    const progress = progressRecords.filter((pr: any) => pr.student_id === sid);
 
     // Get lessons from the digital futures course progress
     const dfProgress = progress.find((p: any) => p.course_id === 'digital-futures');

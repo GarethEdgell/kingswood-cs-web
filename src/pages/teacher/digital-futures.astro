@@ -2,14 +2,14 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
-import { getUser, getProfile } from '../../lib/supabase';
+import { getUser, getProfile, restSelect } from '../../lib/supabase';
 
-const { user, client: supabase } = await getUser(Astro.request, Astro.cookies);
+const { user } = await getUser(Astro.request, Astro.cookies);
 
 if (!user) return Astro.redirect('/login');
 
 const accessToken = Astro.cookies.get('sb-access-token')?.value;
-const profile = await getProfile(user.id, supabase, accessToken);
+const profile = await getProfile(user.id, null, accessToken);
 if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
   return Astro.redirect('/dashboard');
 }
@@ -17,20 +17,20 @@ if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
 const displayName = profile?.full_name || user.email?.split('@')[0] || 'Teacher';
 
 // Fetch classes for this teacher
-const { data: classes } = await supabase
-  .from('classes')
-  .select('id, name, code, year_group, description')
-  .eq('teacher_id', user.id)
-  .order('year_group');
+const classes = await restSelect(
+  'classes',
+  `teacher_id=eq.${user.id}&select=id,name,code,year_group,description&order=year_group`,
+  accessToken
+);
 
 // Fetch student counts for each class
-const classIds = (classes ?? []).map((c: any) => c.id);
-const { data: enrollments } = classIds.length > 0
-  ? await supabase.from('class_students').select('class_id').in('class_id', classIds)
-  : { data: [] };
+const classIds = classes.map((c: any) => c.id);
+const enrollments = classIds.length > 0
+  ? await restSelect('class_students', `class_id=in.(${classIds.join(',')})&select=class_id`, accessToken)
+  : [];
 
 const studentCounts: Record<string, number> = {};
-for (const e of (enrollments ?? [])) {
+for (const e of enrollments) {
   studentCounts[e.class_id] = (studentCounts[e.class_id] ?? 0) + 1;
 }
 ---
