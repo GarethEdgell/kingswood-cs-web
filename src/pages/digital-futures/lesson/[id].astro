@@ -4,6 +4,8 @@ import Nav from '../../../components/Nav.astro';
 import Footer from '../../../components/Footer.astro';
 import { getAllDFLessons, DF_UNITS } from '../../../data/digitalFutures';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const allLessons = getAllDFLessons();
   return allLessons.map(lesson => ({
@@ -241,8 +243,3 @@ const unit = DF_UNITS.find(u => u.lessons.some(l => l.id === id));
   <Footer />
 </BaseLayout>
 
-<style>
-  .lesson-detail {
-    @apply space-y-8;
-  }
-</style>
