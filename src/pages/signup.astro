@@ -64,32 +64,33 @@ import Footer from '../components/Footer.astro';
   <Footer />
 </BaseLayout>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script is:inline>
   const supabaseUrl = 'https://fwudtosslyvtzqxztohl.supabase.co';
   const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3dWR0b3NzbHl2dHpxeHp0b2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxNTU3NTEsImV4cCI6MjA1MjczMTc1MX0.XVh4cMLmZCcIuM82xobBzEhf7gQj_o4_b89DSA5RmDs';
 
-  async function waitForSupabase() {
-    return new Promise((resolve) => {
-      if (window.supabase?.createClient) {
-        resolve();
-        return;
-      }
-      const checkInterval = setInterval(() => {
-        if (window.supabase?.createClient) {
-          clearInterval(checkInterval);
-          resolve();
-        }
-      }, 100);
-      setTimeout(() => clearInterval(checkInterval), 5000);
+  async function signUp(email, password) {
+    console.log('🔄 Calling Supabase signup API...');
+    const response = await fetch(`${supabaseUrl}/auth/v1/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseAnonKey,
+      },
+      body: JSON.stringify({ email, password }),
     });
+
+    const data = await response.json();
+    console.log('Signup response:', data);
+
+    if (!response.ok || data.error) {
+      throw new Error(data.error_description || data.error || 'Signup failed');
+    }
+
+    return data;
   }
 
   async function initSignup() {
     console.log('🚀 Signup script initialized');
-
-    await waitForSupabase();
-    console.log('✅ Supabase loaded');
 
     const form = document.getElementById('signupForm');
     const errorDiv = document.getElementById('error');
@@ -120,28 +121,9 @@ import Footer from '../components/Footer.astro';
       console.log('📧 Creating account:', email);
 
       try {
-        const { createClient } = window.supabase;
-        const client = createClient(supabaseUrl, supabaseAnonKey);
-        console.log('🔄 Calling signUp...');
-
-        const { data, error } = await client.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${location.origin}/auth/callback`,
-          },
-        });
-
-        console.log('Response:', { data, error });
-
-        if (error) {
-          console.error('❌ Signup error:', error.message);
-          errorDiv.textContent = error.message;
-          errorDiv.classList.remove('hidden');
-          return;
-        }
-
+        const result = await signUp(email, password);
         console.log('✅ Signup successful!');
+
         errorDiv.classList.remove('hidden');
         errorDiv.classList.add('text-green-400');
         errorDiv.textContent = 'Account created! Redirecting to login...';
