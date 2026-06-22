@@ -36,47 +36,119 @@ const dfCourses = getCoursesByCategory('Digital Futures');
 
     <!-- Desktop links -->
     <ul class="hidden items-center gap-0.5 md:flex">
-      <!-- Learning dropdown -->
+
+      <!-- Digital Futures dropdown -->
       <li class="relative group">
-        <button class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/digital-futures') || isActive('/revision') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
-          Learning
+        <button class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/digital-futures') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+          Digital Futures
+          <svg class="w-3 h-3 opacity-60 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="absolute left-0 top-full mt-1 w-56 rounded-xl border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-2" style="background:var(--bg-card)">
+          <a href="/digital-futures" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
+            <span>🏠</span><span>All Lessons</span>
+          </a>
+          <div class="my-1 border-t border-white/8"></div>
+          <div class="px-3 pt-1 pb-0.5">
+            <p class="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1.5">Year 8</p>
+          </div>
+          {dfCourses.filter(c => c.name.includes('8')).map(course => (
+            <a href={course.href} class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
+              <span>{course.icon}</span><span>{course.name}</span>
+            </a>
+          ))}
+          {dfCourses.filter(c => !c.name.includes('8')).length > 0 && <div class="my-1 border-t border-white/8"></div>}
+          {dfCourses.filter(c => !c.name.includes('8')).length > 0 && (
+            <div class="px-3 pt-1 pb-0.5">
+              <p class="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1.5">Year 9</p>
+            </div>
+          )}
+          {dfCourses.filter(c => !c.name.includes('8')).map(course => (
+            <a href={course.href} class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
+              <span>{course.icon}</span><span>{course.name}</span>
+            </a>
+          ))}
+        </div>
+      </li>
+
+      <!-- GCSE dropdown -->
+      <li class="relative group">
+        <button class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/revision/ocr-gcse') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+          GCSE
           <svg class="w-3 h-3 opacity-60 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
         </button>
         <div class="absolute left-0 top-full mt-1 w-64 rounded-xl border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-2" style="background:var(--bg-card)">
-          <!-- Digital Futures -->
-          <div class="px-3 py-2">
-            <p class="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-2">Digital Futures</p>
-            {dfCourses.map(course => (
-              <a href={course.href} class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
-                <span>{course.icon}</span>
-                <span>{course.name}</span>
-              </a>
-            ))}
-          </div>
-
-          <div class="my-1 border-t border-white/8"></div>
-
-          <!-- Computer Science -->
-          <div class="px-3 py-2">
-            <p class="text-xs font-bold uppercase tracking-wider text-green-400 mb-2">Computer Science</p>
-            {csCourses.map(course => (
-              <a href={course.href} class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
-                <span>{course.icon}</span>
-                <span class="flex-1">{course.name}</span>
-                {course.badge && <span class="rounded-full bg-white/8 px-1.5 py-0.5 text-xs text-slate-500">{course.badge}</span>}
-              </a>
-            ))}
-          </div>
-
-          <div class="my-1 border-t border-white/8"></div>
-
-          <!-- Tools -->
-          <a href="/tools" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
-            <span>⚙️</span>
-            <span>Interactive Tools</span>
+          <a href="/revision/ocr-gcse-computer-science" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm font-semibold text-cyan-400 hover:bg-white/8 hover:text-white transition-colors">
+            <span>🎯</span><span>All GCSE Topics</span>
           </a>
+          <div class="my-1 border-t border-white/8"></div>
+          <div class="px-3 pt-1 pb-0.5"><p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Component 01</p></div>
+          <a href="/revision/ocr-gcse/ocrg-1" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>💻</span><span>Systems Architecture</span></a>
+          <a href="/revision/ocr-gcse/ocrg-2" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>💾</span><span>Memory & Storage</span></a>
+          <a href="/revision/ocr-gcse/ocrg-3" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🌐</span><span>Networks & Protocols</span></a>
+          <a href="/revision/ocr-gcse/ocrg-4" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔒</span><span>Network Security</span></a>
+          <a href="/revision/ocr-gcse/ocrg-5" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>⚙️</span><span>Systems Software</span></a>
+          <a href="/revision/ocr-gcse/ocrg-6" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>⚖️</span><span>Ethical Issues</span></a>
+          <div class="my-1 border-t border-white/8"></div>
+          <div class="px-3 pt-1 pb-0.5"><p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Component 02</p></div>
+          <a href="/revision/ocr-gcse/ocrg-7" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔃</span><span>Algorithms</span></a>
+          <a href="/revision/ocr-gcse/ocrg-8" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🐍</span><span>Programming Fundamentals</span></a>
+          <a href="/revision/ocr-gcse/ocrg-9" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🛡️</span><span>Robust Programs</span></a>
+          <a href="/revision/ocr-gcse/ocrg-10" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔢</span><span>Boolean Logic</span></a>
+          <a href="/revision/ocr-gcse/ocrg-11" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🖥️</span><span>Languages & IDEs</span></a>
+          <div class="my-1 border-t border-white/8"></div>
+          <a href="/revision/flashcards" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🃏</span><span>Flashcards</span></a>
+          <a href="/revision/notes" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>📚</span><span>Revision Notes</span></a>
         </div>
       </li>
+
+      <!-- A Level dropdown -->
+      <li class="relative group">
+        <button class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/revision/ocr-alevel') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+          A Level
+          <svg class="w-3 h-3 opacity-60 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="absolute left-0 top-full mt-1 w-64 rounded-xl border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-2" style="background:var(--bg-card)">
+          <a href="/revision/ocr-a-level-computer-science" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm font-semibold text-purple-400 hover:bg-white/8 hover:text-white transition-colors">
+            <span>🎯</span><span>All A Level Topics</span>
+          </a>
+          <div class="my-1 border-t border-white/8"></div>
+          <div class="px-3 pt-1 pb-0.5"><p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Component 01</p></div>
+          <a href="/revision/ocr-alevel/ocr-1" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>⚡</span><span>Contemporary Processors</span></a>
+          <a href="/revision/ocr-alevel/ocr-2" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔧</span><span>Software Development</span></a>
+          <a href="/revision/ocr-alevel/ocr-3" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🌐</span><span>Exchanging Data</span></a>
+          <a href="/revision/ocr-alevel/ocr-4" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🗂️</span><span>Data Types & Structures</span></a>
+          <a href="/revision/ocr-alevel/ocr-5" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>⚖️</span><span>Legal & Ethical Issues</span></a>
+          <div class="my-1 border-t border-white/8"></div>
+          <div class="px-3 pt-1 pb-0.5"><p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Component 02</p></div>
+          <a href="/revision/ocr-alevel/ocr-6" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🧠</span><span>Computational Thinking</span></a>
+          <a href="/revision/ocr-alevel/ocr-7" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>💻</span><span>Problem Solving</span></a>
+          <a href="/revision/ocr-alevel/ocr-8" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔃</span><span>Algorithms</span></a>
+          <div class="my-1 border-t border-white/8"></div>
+          <a href="/revision/flashcards" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🃏</span><span>Flashcards</span></a>
+          <a href="/revision/notes?level=alevel" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>📚</span><span>Revision Notes</span></a>
+        </div>
+      </li>
+
+      <!-- Tools dropdown -->
+      <li class="relative group">
+        <button class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/tools') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+          Tools
+          <svg class="w-3 h-3 opacity-60 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="absolute left-0 top-full mt-1 w-56 rounded-xl border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-2" style="background:var(--bg-card)">
+          <a href="/tools/data-representation" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔢</span><span>Data Representation</span></a>
+          <a href="/tools/logic-gates" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>⚡</span><span>Logic Gates</span></a>
+          <a href="/tools/algorithms" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔃</span><span>Algorithm Visualiser</span></a>
+          <a href="/tools/trace-table" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>📋</span><span>Trace Table Builder</span></a>
+          <a href="/tools/lmc" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🤖</span><span>LMC Simulator</span></a>
+          <a href="/tools/fsm" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔄</span><span>FSM Simulator</span></a>
+          <a href="/tools/turing" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>📼</span><span>Turing Machine</span></a>
+          <a href="/tools/exam-countdown" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>⏱️</span><span>Exam Countdown</span></a>
+          <div class="my-1 border-t border-white/8"></div>
+          <a href="/tools" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm font-semibold text-cyan-400 hover:bg-white/8 hover:text-white transition-colors"><span>→</span><span>All Tools</span></a>
+        </div>
+      </li>
+
     </ul>
 
     <!-- Auth buttons -->
