@@ -76,7 +76,7 @@ export async function getProfile(userId: string, _supabaseClient?: any, accessTo
   if (accessToken) {
     try {
       const res = await fetch(
-        `${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=full_name,role,subscription_status&limit=1`,
+        `${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=full_name,role&limit=1`,
         {
           headers: {
             apikey: supabaseAnonKey,
