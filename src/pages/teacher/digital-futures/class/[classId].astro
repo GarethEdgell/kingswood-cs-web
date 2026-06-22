@@ -2,67 +2,172 @@
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import Nav from '../../../../components/Nav.astro';
 import Footer from '../../../../components/Footer.astro';
-import { getUser } from '../../../../lib/supabase';
+import ReportGenerator from '../../../../components/teacher/ReportGenerator.svelte';
+import { getUser, getProfile } from '../../../../lib/supabase';
 
-const { user } = await getUser(Astro.request, Astro.cookies);
+const { user, client: supabase } = await getUser(Astro.request, Astro.cookies);
 
-if (!user) {
-  return Astro.redirect('/login');
+if (!user) return Astro.redirect('/login');
+
+const profile = await getProfile(user.id, supabase);
+if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
+  return Astro.redirect('/dashboard');
 }
 
 const { classId } = Astro.params;
+
+// Fetch class details
+const { data: cls } = await supabase
+  .from('classes')
+  .select('id, name, code, year_group, description')
+  .eq('id', classId)
+  .eq('teacher_id', user.id)
+  .single();
+
+if (!cls) return Astro.redirect('/teacher/digital-futures');
+
+// Fetch students in class
+const { data: classStudents } = await supabase
+  .from('class_students')
+  .select('student_id, profiles(full_name, email)')
+  .eq('class_id', classId);
+
+const students = (classStudents ?? []).map((cs: any) => ({
+  id: cs.student_id,
+  name: cs.profiles?.full_name || cs.profiles?.email || 'Unknown',
+}));
+
+// Fetch progress for all students
+const studentIds = students.map((s: any) => s.id);
+const { data: progressRecords } = studentIds.length > 0
+  ? await supabase.from('student_progress').select('*').in('student_id', studentIds)
+  : { data: [] };
+
+const avgScore = progressRecords?.length
+  ? Math.round(progressRecords.reduce((sum: number, p: any) => sum + (p.avg_quiz_score ?? 0), 0) / progressRecords.length)
+  : null;
+
+const totalLessons = progressRecords?.length
+  ? Math.round(progressRecords.reduce((sum: number, p: any) => sum + (p.lessons_completed ?? 0), 0) / progressRecords.length)
+  : 0;
 ---
 
 <BaseLayout
-  title="Class Management — Digital Futures"
-  description="Manage your Digital Futures class, assign lessons, and track student progress."
+  title={`${cls.name} — Teacher Dashboard`}
+  description="Manage your Digital Futures class and track student progress."
 >
   <Nav />
 
-  <section class="px-4 py-24 sm:px-6 sm:py-32">
+  <section class="px-4 py-12 sm:px-6 border-b border-white/8">
     <div class="mx-auto max-w-6xl">
-      <h1 class="text-5xl font-black text-white mb-4">Class {classId}</h1>
-      <p class="text-lg text-slate-400 mb-12">Digital Futures — Year 8</p>
+      <div class="flex items-center gap-2 text-sm text-slate-400 mb-4">
+        <a href="/teacher/digital-futures" class="hover:text-white transition-colors">Teacher Dashboard</a>
+        <span>›</span>
+        <span class="text-white">{cls.name}</span>
+      </div>
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h1 class="text-4xl font-black text-white mb-2">{cls.name}</h1>
+          <p class="text-slate-400">{cls.description ?? 'Digital Futures'} · Year {cls.year_group}</p>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-center">
+          <div class="text-xs text-slate-400 mb-1">Class Code</div>
+          <div class="text-xl font-black text-cyan-400 font-mono">{cls.code}</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      <div class="grid gap-6 sm:grid-cols-3 mb-12">
+  <section class="px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-6xl space-y-10">
+
+      <!-- Stats -->
+      <div class="grid gap-4 sm:grid-cols-3">
         <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
-          <div class="text-4xl font-black text-cyan-400 mb-2">0</div>
-          <p class="text-slate-400">Students</p>
+          <div class="text-4xl font-black text-cyan-400 mb-1">{students.length}</div>
+          <p class="text-slate-400 text-sm">Students</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
-          <div class="text-4xl font-black text-purple-400 mb-2">0/17</div>
-          <p class="text-slate-400">Lessons Assigned</p>
+          <div class="text-4xl font-black text-purple-400 mb-1">{totalLessons}</div>
+          <p class="text-slate-400 text-sm">Avg Lessons Completed</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
-          <div class="text-4xl font-black text-green-400 mb-2">-</div>
-          <p class="text-slate-400">Class Average</p>
+          <div class="text-4xl font-black text-green-400 mb-1">{avgScore !== null ? `${avgScore}%` : '—'}</div>
+          <p class="text-slate-400 text-sm">Class Average Score</p>
         </div>
       </div>
 
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
-        <h2 class="text-2xl font-black text-white mb-6">Students in Class</h2>
-        <p class="text-slate-400">No students enrolled yet. Share the class code with your students to add them.</p>
-
-        <div class="mt-6 p-4 rounded-lg bg-white/5 border border-white/10">
-          <p class="text-sm text-slate-400 mb-1">Class Code:</p>
-          <p class="text-2xl font-bold text-cyan-400 font-mono">{classId?.toUpperCase()}</p>
-        </div>
+      <!-- Students -->
+      <div>
+        <h2 class="text-2xl font-black text-white mb-4">Students</h2>
+        {students.length === 0 ? (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-slate-400">
+            No students enrolled yet. Share the class code <span class="text-cyan-400 font-bold font-mono">{cls.code}</span> with your students.
+          </div>
+        ) : (
+          <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-white/10">
+                  <th class="text-left px-4 py-3 text-slate-400 font-semibold">Student</th>
+                  <th class="text-center px-4 py-3 text-slate-400 font-semibold">Lessons</th>
+                  <th class="text-center px-4 py-3 text-slate-400 font-semibold">Avg Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map((s: any) => {
+                  const prog = (progressRecords ?? []).find((p: any) => p.student_id === s.id && p.course_id === 'digital-futures');
+                  return (
+                    <tr class="border-b border-white/5 hover:bg-white/3 transition-colors">
+                      <td class="px-4 py-3 text-white font-medium">{s.name}</td>
+                      <td class="px-4 py-3 text-center text-slate-300">{prog?.lessons_completed ?? 0}</td>
+                      <td class="px-4 py-3 text-center">
+                        {prog?.avg_quiz_score != null ? (
+                          <span class={`font-bold ${prog.avg_quiz_score >= 75 ? 'text-green-400' : prog.avg_quiz_score >= 50 ? 'text-amber-400' : 'text-red-400'}`}>
+                            {Math.round(prog.avg_quiz_score)}%
+                          </span>
+                        ) : (
+                          <span class="text-slate-500">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      <div class="mt-12 border-t border-white/8 pt-12">
-        <h2 class="text-2xl font-black text-white mb-6">Quick Actions</h2>
-        <div class="grid gap-4 sm:grid-cols-3">
-          <a href={`/teacher/digital-futures/class/${classId}/students`} class="rounded-lg bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/30 px-6 py-3 font-semibold transition-colors text-center">
-            📚 Manage Courses
+      <!-- Report Generator -->
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <ReportGenerator
+          client:load
+          classId={classId!}
+          className={cls.name}
+          studentCount={students.length}
+        />
+      </div>
+
+      <!-- Quick Actions -->
+      <div>
+        <h2 class="text-2xl font-black text-white mb-4">Quick Actions</h2>
+        <div class="grid gap-3 sm:grid-cols-3">
+          <a href={`/teacher/digital-futures/class/${classId}/students`}
+             class="rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30 px-5 py-3 font-semibold transition-colors text-center">
+            📚 Manage Course Access
           </a>
-          <button class="rounded-lg bg-purple-500/20 border border-purple-500/50 text-purple-400 hover:bg-purple-500/30 px-6 py-3 font-semibold transition-colors">
-            📋 Assign Lesson
-          </button>
-          <a href={`/teacher/digital-futures/stats/${classId}`} class="rounded-lg bg-green-500/20 border border-green-500/50 text-green-400 hover:bg-green-500/30 px-6 py-3 font-semibold transition-colors text-center">
-            📊 View Statistics
+          <a href={`/teacher/digital-futures/stats/${classId}`}
+             class="rounded-xl bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 px-5 py-3 font-semibold transition-colors text-center">
+            📊 Detailed Statistics
+          </a>
+          <a href="/teacher/digital-futures"
+             class="rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10 hover:text-white px-5 py-3 font-semibold transition-colors text-center">
+            ← All Classes
           </a>
         </div>
       </div>
+
     </div>
   </section>
 
