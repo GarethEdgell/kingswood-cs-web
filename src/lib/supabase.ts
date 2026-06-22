@@ -71,11 +71,18 @@ export async function getUser(request: Request, cookies: AstroCookies) {
   return { user: null, client };
 }
 
-export async function getProfile(userId: string, supabaseClient: ReturnType<typeof getServerSupabase>) {
-  const { data } = await supabaseClient
-    .from('profiles')
-    .select('full_name, role, subscription_status')
-    .eq('id', userId)
-    .single();
-  return data ?? null;
+export async function getProfile(userId: string, _supabaseClient?: any) {
+  // Always use service role for profile lookups — the regular client may not
+  // have a session when using our custom cookie auth, causing RLS to block it.
+  try {
+    const admin = getServiceSupabase();
+    const { data } = await admin
+      .from('profiles')
+      .select('full_name, role, subscription_status')
+      .eq('id', userId)
+      .single();
+    return data ?? null;
+  } catch {
+    return null;
+  }
 }
