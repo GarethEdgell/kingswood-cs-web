@@ -13,6 +13,20 @@
   --cyan: #00d4ff;
   --purple: #7c3aed;
   --green: #00ff94;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --border: rgba(255,255,255,0.08);
+}
+
+html.light {
+  --bg-base: #f0f4f8;
+  --bg-card: #ffffff;
+  --bg-hover: #e8eef5;
+  --bg-footer: #e2e8f0;
+  --nav-bg: rgba(240, 244, 248, 0.95);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border: rgba(0,0,0,0.08);
 }
 
 html {
@@ -21,8 +35,9 @@ html {
 
 body {
   background-color: var(--bg-base);
-  color: #e2e8f0;
+  color: var(--text-primary);
   font-family: var(--font-sans);
+  transition: background-color 0.2s, color 0.2s;
 }
 
 body::before {
@@ -36,6 +51,32 @@ body::before {
   pointer-events: none;
   z-index: 0;
 }
+
+html.light body::before {
+  background-image:
+    linear-gradient(rgba(0, 150, 200, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 150, 200, 0.04) 1px, transparent 1px);
+}
+
+/* Light mode text overrides */
+html.light .text-white { color: #0f172a !important; }
+html.light .text-slate-200 { color: #1e293b !important; }
+html.light .text-slate-300 { color: #334155 !important; }
+html.light .text-slate-400 { color: #475569 !important; }
+html.light .text-slate-500 { color: #64748b !important; }
+
+/* Light mode backgrounds */
+html.light .bg-\[var\(--bg-card\)\] { background: var(--bg-card) !important; }
+html.light .bg-white\/5 { background: rgba(0,0,0,0.04) !important; }
+html.light .bg-white\/8 { background: rgba(0,0,0,0.06) !important; }
+html.light .bg-white\/10 { background: rgba(0,0,0,0.07) !important; }
+html.light .bg-black\/20 { background: rgba(0,0,0,0.06) !important; }
+
+/* Light mode borders */
+html.light .border-white\/8 { border-color: rgba(0,0,0,0.08) !important; }
+html.light .border-white\/10 { border-color: rgba(0,0,0,0.10) !important; }
+html.light .border-white\/15 { border-color: rgba(0,0,0,0.12) !important; }
+html.light .border-white\/20 { border-color: rgba(0,0,0,0.15) !important; }
 
 .text-gradient {
   background: linear-gradient(135deg, #00d4ff, #7c3aed);

@@ -45,28 +45,15 @@ const dfCourses = getCoursesByCategory('Digital Futures');
         </button>
         <div class="absolute left-0 top-full mt-1 w-56 rounded-xl border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-2" style="background:var(--bg-card)">
           <a href="/digital-futures" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
-            <span>🏠</span><span>All Lessons</span>
+            <span>🏠</span><span>Overview</span>
           </a>
           <div class="my-1 border-t border-white/8"></div>
-          <div class="px-3 pt-1 pb-0.5">
-            <p class="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1.5">Year 8</p>
-          </div>
-          {dfCourses.filter(c => c.name.includes('8')).map(course => (
-            <a href={course.href} class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
-              <span>{course.icon}</span><span>{course.name}</span>
-            </a>
-          ))}
-          {dfCourses.filter(c => !c.name.includes('8')).length > 0 && <div class="my-1 border-t border-white/8"></div>}
-          {dfCourses.filter(c => !c.name.includes('8')).length > 0 && (
-            <div class="px-3 pt-1 pb-0.5">
-              <p class="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1.5">Year 9</p>
-            </div>
-          )}
-          {dfCourses.filter(c => !c.name.includes('8')).map(course => (
-            <a href={course.href} class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
-              <span>{course.icon}</span><span>{course.name}</span>
-            </a>
-          ))}
+          <a href="/digital-futures/year-8" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm font-semibold text-cyan-400 hover:bg-white/8 hover:text-white transition-colors">
+            <span>📘</span><span>Year 8 — All Lessons</span>
+          </a>
+          <a href="/digital-futures/year-9" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm font-semibold text-purple-400 hover:bg-white/8 hover:text-white transition-colors">
+            <span>📗</span><span>Year 9 — All Lessons</span>
+          </a>
         </div>
       </li>
 
@@ -153,6 +140,12 @@ const dfCourses = getCoursesByCategory('Digital Futures');
 
     <!-- Auth buttons -->
     <div class="hidden items-center gap-2 md:flex">
+      <!-- Theme toggle -->
+      <button
+        id="themeToggle"
+        aria-label="Toggle light/dark mode"
+        class="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-white/10 transition-colors text-sm"
+      >☀️</button>
       {user ? (
         <>
           {isTeacher && <a href="/teacher/digital-futures" class="rounded-md px-3 py-1.5 text-sm font-semibold text-cyan-400 hover:text-white">🏫 Teacher</a>}
@@ -175,3 +168,24 @@ const dfCourses = getCoursesByCategory('Digital Futures');
     </button>
   </nav>
 </header>
+
+<script is:inline>
+  (function() {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+
+    function applyTheme(light) {
+      document.documentElement.classList.toggle('light', light);
+      btn.textContent = light ? '🌙' : '☀️';
+      try { localStorage.setItem('theme', light ? 'light' : 'dark'); } catch(e) {}
+    }
+
+    // Init button icon
+    const isLight = document.documentElement.classList.contains('light');
+    btn.textContent = isLight ? '🌙' : '☀️';
+
+    btn.addEventListener('click', () => {
+      applyTheme(!document.documentElement.classList.contains('light'));
+    });
+  })();
+</script>
