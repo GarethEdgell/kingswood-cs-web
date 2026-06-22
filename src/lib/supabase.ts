@@ -38,8 +38,37 @@ export async function getSession(request: Request, cookies: AstroCookies) {
 
 export async function getUser(request: Request, cookies: AstroCookies) {
   const client = getServerSupabase(request, cookies);
+
+  // Try to get user from Supabase session
   const { data: { user } } = await client.auth.getUser();
-  return { user, client };
+
+  if (user) {
+    return { user, client };
+  }
+
+  // If no user in session, check for our custom token cookie
+  const accessToken = cookies.get('sb-access-token')?.value;
+  if (accessToken) {
+    console.log('Found access token in cookie, verifying...');
+    try {
+      // Verify the token by calling the user endpoint
+      const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          apikey: supabaseAnonKey,
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        return { user: userData, client };
+      }
+    } catch (error) {
+      console.error('Token verification failed:', error);
+    }
+  }
+
+  return { user: null, client };
 }
 
 export async function getProfile(userId: string, supabaseClient: ReturnType<typeof getServerSupabase>) {

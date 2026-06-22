@@ -127,18 +127,22 @@ import Footer from '../components/Footer.astro';
         errorDiv.textContent = '✅ Login successful! Setting up session...';
 
         if (result.access_token) {
-          // Store the session in a format Supabase can read
-          const sessionData = {
-            access_token: result.access_token,
-            refresh_token: result.refresh_token,
-            expires_in: result.expires_in,
-            token_type: result.token_type,
-            user: result.user
-          };
+          console.log('🔐 Setting up session...');
+          const callbackResponse = await fetch('/api/auth/callback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              access_token: result.access_token,
+              refresh_token: result.refresh_token,
+              expires_in: result.expires_in,
+            }),
+          });
 
-          // Set as a secure cookie for server-side reading
-          document.cookie = `sb-session=${btoa(JSON.stringify(sessionData))}; path=/; max-age=3600`;
-          localStorage.setItem('sb-access-token', result.access_token);
+          if (!callbackResponse.ok) {
+            throw new Error('Failed to set up session');
+          }
+
+          console.log('✅ Session set up, redirecting...');
         }
 
         errorDiv.textContent = '✅ Redirecting to dashboard...';
