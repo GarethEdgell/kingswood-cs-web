@@ -38,11 +38,39 @@ export async function GET({ request, cookies }: { request: Request; cookies: any
     }
   }
 
+  // Check classes query
+  let classesResult = null;
+  if (user && accessToken) {
+    try {
+      const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+      // Filtered by teacher_id (what the dashboard does)
+      const res1 = await fetch(
+        `${supabaseUrl}/rest/v1/classes?teacher_id=eq.${user.id}&select=id,name,code,teacher_id`,
+        { headers: { apikey: supabaseAnonKey, Authorization: `Bearer ${accessToken}`, Accept: 'application/json' } }
+      );
+      const body1 = await res1.text();
+      // Unfiltered (all classes the token can see)
+      const res2 = await fetch(
+        `${supabaseUrl}/rest/v1/classes?select=id,name,code,teacher_id`,
+        { headers: { apikey: supabaseAnonKey, Authorization: `Bearer ${accessToken}`, Accept: 'application/json' } }
+      );
+      const body2 = await res2.text();
+      classesResult = {
+        filteredByTeacher: { status: res1.status, body: body1 },
+        allVisible: { status: res2.status, body: body2 },
+      };
+    } catch (e: any) {
+      classesResult = { error: e.message };
+    }
+  }
+
   return new Response(JSON.stringify({
     user: user ? { id: user.id, email: user.email } : null,
     profile,
     profileError,
     directFetchResult,
+    classesResult,
     cookies: {
       hasAccessToken: !!accessToken,
       hasSessionCookie: !!sessionCookie,
