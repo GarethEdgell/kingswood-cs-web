@@ -1,10 +1,14 @@
 <script>
   import { createClient } from '@supabase/supabase-js';
 
-  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+  export let supabaseUrl = '';
+  export let supabaseAnonKey = '';
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  let supabase;
+
+  $: if (supabaseUrl && supabaseAnonKey) {
+    supabase = createClient(supabaseUrl, supabaseAnonKey);
+  }
 
   let email = '';
   let password = '';
