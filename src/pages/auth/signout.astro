@@ -1,11 +1,12 @@
 ---
-// Handle sign-out
-
 import { getServerSupabase } from '../../lib/supabase';
 
 const supabase = getServerSupabase(Astro.request, Astro.cookies);
 await supabase.auth.signOut();
 
-// Redirect to homepage after sign-out
-return Astro.redirect('/');
+// Clear our custom auth cookies
+Astro.cookies.delete('sb-access-token', { path: '/' });
+Astro.cookies.delete('sb-refresh-token', { path: '/' });
+
+return Astro.redirect('/login');
 ---
