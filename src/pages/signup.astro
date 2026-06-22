@@ -15,7 +15,7 @@ import Footer from '../components/Footer.astro';
       <h1 class="text-4xl font-black text-white mb-8 text-center">Sign Up</h1>
 
       <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
-        <form id="signupForm" class="space-y-4">
+        <div class="space-y-4">
           <div>
             <label for="email" class="block text-sm font-semibold text-slate-300 mb-2">Email</label>
             <input
@@ -40,14 +40,14 @@ import Footer from '../components/Footer.astro';
           </div>
 
           <button
-            type="submit"
+            id="signUpButton"
             class="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-600 text-black font-bold py-3 hover:shadow-lg hover:shadow-cyan-500/50 transition-all"
           >
             Create Account
           </button>
 
           <div id="error" class="text-red-400 text-sm text-center hidden"></div>
-        </form>
+        </div>
 
         <div class="mt-6 pt-6 border-t border-white/8 text-center">
           <p class="text-slate-400 text-sm">Already have an account?</p>
@@ -92,25 +92,31 @@ import Footer from '../components/Footer.astro';
   async function initSignup() {
     console.log('🚀 Signup script initialized');
 
-    const form = document.getElementById('signupForm');
+    const button = document.getElementById('signUpButton');
     const errorDiv = document.getElementById('error');
 
-    if (!form) {
-      console.error('❌ Form not found');
+    if (!button) {
+      console.error('❌ Button not found');
       return;
     }
 
-    console.log('✅ Form found, attaching listener');
+    console.log('✅ Button found, attaching listener');
 
-    form.addEventListener('submit', async (e) => {
+    button.addEventListener('click', async (e) => {
       e.preventDefault();
-      console.log('📝 Signup form submitted');
+      console.log('📝 Button clicked');
 
       errorDiv.classList.add('hidden');
       errorDiv.textContent = '';
 
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        errorDiv.textContent = 'Please enter email and password';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
 
       if (password.length < 8) {
         errorDiv.textContent = 'Password must be at least 8 characters';
