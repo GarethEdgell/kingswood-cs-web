@@ -124,15 +124,27 @@ import Footer from '../components/Footer.astro';
 
         const result = await signIn(email, password);
         console.log('✅ Login successful!');
-        errorDiv.textContent = '✅ Login successful! Redirecting...';
+        errorDiv.textContent = '✅ Login successful! Setting up session...';
 
         if (result.access_token) {
-          localStorage.setItem('sb-auth-token', result.access_token);
+          // Store the session in a format Supabase can read
+          const sessionData = {
+            access_token: result.access_token,
+            refresh_token: result.refresh_token,
+            expires_in: result.expires_in,
+            token_type: result.token_type,
+            user: result.user
+          };
+
+          // Set as a secure cookie for server-side reading
+          document.cookie = `sb-session=${btoa(JSON.stringify(sessionData))}; path=/; max-age=3600`;
+          localStorage.setItem('sb-access-token', result.access_token);
         }
 
+        errorDiv.textContent = '✅ Redirecting to dashboard...';
         setTimeout(() => {
           window.location.href = '/dashboard';
-        }, 2000);
+        }, 1500);
       } catch (err) {
         console.error('❌ Exception:', err);
         errorDiv.textContent = '❌ ' + (err.message || 'An error occurred');
