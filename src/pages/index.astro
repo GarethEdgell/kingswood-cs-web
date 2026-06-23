@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 
 const features = [
   { icon: '🤖', title: 'Digital Futures', desc: 'Year 8 & 9 AI & digital skills curriculum using Microsoft 365 tools', href: '/digital-futures' },
+  { icon: '🐍', title: 'Python Quest', desc: 'Gamified Python course — learn every OCR GCSE coding skill by doing', href: '/courses/python' },
   { icon: '❓', title: 'OCR GCSE', desc: '660+ exam questions across all 11 J277 topics with revision notes', href: '/revision/ocr-gcse-computer-science' },
   { icon: '📖', title: 'OCR A Level', desc: '480+ questions across all 8 H446 topics with detailed spec notes', href: '/revision/ocr-a-level-computer-science' },
   { icon: '⚙️', title: 'Interactive Tools', desc: 'Binary converter, logic gates, LMC simulator, algorithms and more', href: '/tools' },
@@ -63,7 +64,7 @@ const features = [
         <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">Everything you need</h2>
         <p class="text-slate-400 max-w-xl mx-auto">Curriculum, revision, and tools — all in one place.</p>
       </div>
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {features.map(f => (
           <a href={f.href} class="rounded-2xl border border-white/8 bg-[var(--bg-card)] p-6 hover:border-cyan-500/40 hover:bg-white/8 transition-all group">
             <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">{f.icon}</div>
