@@ -85,17 +85,26 @@ Each question includes: type (MCQ/short/long), difficulty, spec statement, optio
 - Always run `npm run build` before committing
 - Commit messages: imperative mood, describe the why
 
+## Assignments, Quizzes & Teacher-Mediated AI
+- **Quizzes:** auto-graded MCQs in `src/data/dfQuizzes.ts` (one per lesson). Engine: `src/components/Quiz.svelte`; practice page `digital-futures/quiz/[id].astro`. Add a quiz by appending a `DFQuiz` keyed by lesson id.
+- **Assignments/submissions:** Supabase tables in `SUPABASE_ASSIGNMENTS.sql` (run once in the SQL editor). Teachers create assignments on the class page; students submit via `digital-futures/assignment/[id].astro`.
+- **Teacher-mediated AI (under-13 safe):** Year 8 students never call a live AI. They submit work + a prompt; the teacher batch-runs them server-side via `/api/assignments/[id]/run-ai`, which is the ONLY caller of `src/lib/ai.ts`. Provider is env-switched (`AI_PROVIDER=stub|anthropic`); stub works with no key.
+
 ## Environment Variables
 Set in Vercel:
 ```
 PUBLIC_SUPABASE_URL=
 PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+AI_PROVIDER=stub            # or 'anthropic' to enable real AI
+ANTHROPIC_API_KEY=          # required when AI_PROVIDER=anthropic
+AI_MODEL=                   # optional override (default claude-haiku-4-5-20251001)
 ```
 
 See `.env.example` for template.
 
 ## Deployment Checklist
+- [ ] Run `SUPABASE_ASSIGNMENTS.sql` in the Supabase SQL editor (first deploy of assignments/quizzes)
 - [ ] Build passes locally (`npm run build`)
 - [ ] All new pages added to sitemap (if needed)
 - [ ] Env vars set in Vercel dashboard

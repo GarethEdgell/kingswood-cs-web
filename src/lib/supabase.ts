@@ -96,3 +96,82 @@ export async function getProfile(userId: string, _supabaseClient?: any, accessTo
   const rows = await restSelect('profiles', `id=eq.${userId}&select=full_name,role&limit=1`, accessToken);
   return rows[0] ?? null;
 }
+
+// ── Service-role REST helpers ───────────────────────────────────────
+// Used by teacher/student API endpoints for reliable reads/writes on Vercel,
+// where the session-based SSR client and supabase-js service client have been
+// flaky. Identity/authorisation is always checked in the endpoint BEFORE these
+// run — the service role bypasses RLS, so callers are responsible for scoping.
+
+function getServiceKey(): string {
+  return (
+    import.meta.env.SUPABASE_SERVICE_ROLE_KEY ||
+    (typeof process !== 'undefined' ? process.env?.SUPABASE_SERVICE_ROLE_KEY : '') ||
+    ''
+  );
+}
+
+export async function serviceSelect(table: string, query: string): Promise<any[]> {
+  const key = getServiceKey();
+  if (!key) throw new Error('SUPABASE_SERVICE_ROLE_KEY not set');
+  const res = await fetch(`${supabaseUrl}/rest/v1/${table}?${query}`, {
+    headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: 'application/json' },
+  });
+  if (!res.ok) {
+    console.error(`serviceSelect ${table} failed:`, res.status, await res.text());
+    return [];
+  }
+  return res.json();
+}
+
+// Insert or upsert rows. Pass `onConflict` to upsert on that unique column(s).
+export async function serviceWrite(
+  table: string,
+  rows: Record<string, any> | Record<string, any>[],
+  opts: { onConflict?: string } = {}
+): Promise<{ ok: boolean; status: number; data: any[] }> {
+  const key = getServiceKey();
+  if (!key) throw new Error('SUPABASE_SERVICE_ROLE_KEY not set');
+  const params = new URLSearchParams();
+  if (opts.onConflict) params.set('on_conflict', opts.onConflict);
+  const url = `${supabaseUrl}/rest/v1/${table}${params.toString() ? `?${params}` : ''}`;
+  const prefer = opts.onConflict
+    ? 'return=representation,resolution=merge-duplicates'
+    : 'return=representation';
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      'Content-Type': 'application/json',
+      Prefer: prefer,
+    },
+    body: JSON.stringify(rows),
+  });
+  const text = await res.text();
+  if (!res.ok) console.error(`serviceWrite ${table} failed:`, res.status, text);
+  return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : [] };
+}
+
+// Patch rows matching a filter query (e.g. `id=eq.<uuid>`).
+export async function servicePatch(
+  table: string,
+  query: string,
+  patch: Record<string, any>
+): Promise<{ ok: boolean; status: number; data: any[] }> {
+  const key = getServiceKey();
+  if (!key) throw new Error('SUPABASE_SERVICE_ROLE_KEY not set');
+  const res = await fetch(`${supabaseUrl}/rest/v1/${table}?${query}`, {
+    method: 'PATCH',
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    },
+    body: JSON.stringify(patch),
+  });
+  const text = await res.text();
+  if (!res.ok) console.error(`servicePatch ${table} failed:`, res.status, text);
+  return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : [] };
+}

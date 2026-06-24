@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import Quiz from '../../../components/Quiz.svelte';
+import AiTaskForm from '../../../components/AiTaskForm.svelte';
+import { getUser, restSelect } from '../../../lib/supabase';
+import { getQuizForLesson } from '../../../data/dfQuizzes';
+
+const { user } = await getUser(Astro.request, Astro.cookies);
+if (!user) return Astro.redirect('/login');
+
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const { id } = Astro.params;
+
+// RLS lets students read assignments only for classes they're enrolled in.
+const assignments = await restSelect(
+  'assignments',
+  `id=eq.${id}&select=id,type,lesson_id,quiz_id,title,instructions,prompt_guidance,due_date&limit=1`,
+  accessToken
+);
+const assignment = assignments[0];
+if (!assignment) return Astro.redirect('/dashboard');
+
+// The student's existing submission (RLS: own rows only).
+const submissions = await restSelect(
+  'submissions',
+  `assignment_id=eq.${id}&student_id=eq.${user.id}&select=work_text,prompt_text,score,ai_status,ai_response&limit=1`,
+  accessToken
+);
+const submission = submissions[0] ?? null;
+
+const quiz = assignment.type === 'quiz'
+  ? getQuizForLesson(assignment.quiz_id || assignment.lesson_id)
+  : null;
+---
+
+<BaseLayout title={`${assignment.title} — Assignment`} description="Your assignment">
+  <Nav />
+
+  <section class="px-4 py-12 sm:px-6">
+    <div class="mx-auto max-w-2xl">
+      <div class="flex items-center gap-3 mb-6">
+        <a href="/dashboard" class="text-slate-400 hover:text-white transition-colors">← Back to Dashboard</a>
+      </div>
+
+      <div class="mb-8">
+        <span class="rounded-full px-3 py-1 text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 capitalize">
+          {assignment.type === 'ai-task' ? 'AI Task' : assignment.type}
+        </span>
+        <h1 class="text-3xl font-black text-white mt-3">{assignment.title}</h1>
+        {assignment.instructions && <p class="text-slate-400 mt-2">{assignment.instructions}</p>}
+        {assignment.due_date && (
+          <p class="text-xs text-slate-500 mt-2">Due: {new Date(assignment.due_date).toLocaleString()}</p>
+        )}
+      </div>
+
+      {assignment.type === 'quiz' && quiz && (
+        <Fragment>
+          {submission?.score != null && (
+            <div class="rounded-xl border border-green-500/30 bg-green-500/10 p-4 mb-6 text-green-300 text-sm">
+              ✅ Already submitted — your score: {submission.score}%. You can retake it below.
+            </div>
+          )}
+          <Quiz client:load quiz={quiz} assignmentId={assignment.id} />
+        </Fragment>
+      )}
+
+      {assignment.type === 'quiz' && !quiz && (
+        <div class="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200 text-sm">
+          This quiz could not be found. Please tell your teacher.
+        </div>
+      )}
+
+      {assignment.type === 'ai-task' && (
+        <AiTaskForm
+          client:load
+          assignmentId={assignment.id}
+          promptGuidance={assignment.prompt_guidance ?? ''}
+          initialWork={submission?.work_text ?? ''}
+          initialPrompt={submission?.prompt_text ?? ''}
+          aiStatus={submission?.ai_status ?? 'none'}
+          aiResponse={submission?.ai_response ?? ''}
+        />
+      )}
+
+      {assignment.type === 'work' && (
+        <AiTaskForm
+          client:load
+          submitType="work"
+          assignmentId={assignment.id}
+          promptGuidance={assignment.prompt_guidance ?? ''}
+          initialWork={submission?.work_text ?? ''}
+          aiStatus={submission?.ai_status ?? 'none'}
+        />
+      )}
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

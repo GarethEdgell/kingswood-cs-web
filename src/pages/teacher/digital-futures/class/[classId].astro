@@ -3,7 +3,10 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import Nav from '../../../../components/Nav.astro';
 import Footer from '../../../../components/Footer.astro';
 import ReportGenerator from '../../../../components/teacher/ReportGenerator.svelte';
+import AssignmentCreator from '../../../../components/teacher/AssignmentCreator.svelte';
 import { getUser, getProfile, restSelect } from '../../../../lib/supabase';
+import { getAllDFLessons } from '../../../../data/digitalFutures';
+import { hasQuiz } from '../../../../data/dfQuizzes';
 
 const { user } = await getUser(Astro.request, Astro.cookies);
 
@@ -55,6 +58,28 @@ const avgScore = progressRecords.length
 const totalLessons = progressRecords.length
   ? Math.round(progressRecords.reduce((sum: number, p: any) => sum + (p.lessons_completed ?? 0), 0) / progressRecords.length)
   : 0;
+
+// Assignments for this class + submission counts.
+const classAssignments = await restSelect(
+  'assignments',
+  `class_id=eq.${classId}&select=id,type,title,due_date,created_at&order=created_at.desc`,
+  accessToken
+);
+const assignmentIds = classAssignments.map((a: any) => a.id);
+const allSubs = assignmentIds.length
+  ? await restSelect('submissions', `assignment_id=in.(${assignmentIds.join(',')})&select=assignment_id,ai_status`, accessToken)
+  : [];
+const subCount: Record<string, number> = {};
+const pendingCount: Record<string, number> = {};
+for (const s of allSubs) {
+  subCount[s.assignment_id] = (subCount[s.assignment_id] ?? 0) + 1;
+  if (s.ai_status === 'pending') pendingCount[s.assignment_id] = (pendingCount[s.assignment_id] ?? 0) + 1;
+}
+
+// Lesson list for the assignment creator (filtered to this class's year group).
+const lessonOptions = getAllDFLessons()
+  .filter(l => !cls.year_group || l.year === cls.year_group)
+  .map(l => ({ id: l.id, title: l.title, year: l.year, hasQuiz: hasQuiz(l.id) }));
 ---
 
 <BaseLayout
@@ -140,6 +165,38 @@ const totalLessons = progressRecords.length
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+      </div>
+
+      <!-- Assignments -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-black text-white">Assignments</h2>
+          <AssignmentCreator client:load classId={classId!} lessons={lessonOptions} />
+        </div>
+
+        {classAssignments.length === 0 ? (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-slate-400">
+            No assignments yet. Create a quiz or an AI task with the button above.
+          </div>
+        ) : (
+          <div class="grid gap-3 sm:grid-cols-2">
+            {classAssignments.map((a: any) => (
+              <a href={`/teacher/digital-futures/assignment/${a.id}`}
+                 class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-cyan-500/40 hover:bg-white/8 transition-all">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="rounded-full px-2.5 py-0.5 text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 capitalize">
+                    {a.type === 'ai-task' ? 'AI Task' : a.type}
+                  </span>
+                  {(pendingCount[a.id] ?? 0) > 0 && (
+                    <span class="text-xs font-bold text-amber-400">{pendingCount[a.id]} pending AI</span>
+                  )}
+                </div>
+                <h3 class="font-bold text-white mb-1">{a.title}</h3>
+                <p class="text-xs text-slate-400">{subCount[a.id] ?? 0} submission{(subCount[a.id] ?? 0) === 1 ? '' : 's'}</p>
+              </a>
+            ))}
           </div>
         )}
       </div>

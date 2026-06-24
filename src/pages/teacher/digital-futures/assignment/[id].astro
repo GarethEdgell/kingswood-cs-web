@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Nav from '../../../../components/Nav.astro';
+import Footer from '../../../../components/Footer.astro';
+import RunAiButton from '../../../../components/teacher/RunAiButton.svelte';
+import { getUser, getProfile, restSelect } from '../../../../lib/supabase';
+
+const { user } = await getUser(Astro.request, Astro.cookies);
+if (!user) return Astro.redirect('/login');
+
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const profile = await getProfile(user.id, null, accessToken);
+if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
+  return Astro.redirect('/dashboard');
+}
+
+const { id } = Astro.params;
+
+// Assignment (RLS: teacher owns it).
+const assignments = await restSelect(
+  'assignments',
+  `id=eq.${id}&teacher_id=eq.${user.id}&select=id,class_id,type,title,instructions,prompt_guidance,ai_system_prompt,due_date&limit=1`,
+  accessToken
+);
+const assignment = assignments[0];
+if (!assignment) return Astro.redirect('/teacher/digital-futures');
+
+// Submissions for this assignment (RLS: teacher owns parent assignment).
+const submissions = await restSelect(
+  'submissions',
+  `assignment_id=eq.${id}&select=id,student_id,work_text,prompt_text,score,ai_status,ai_response,updated_at`,
+  accessToken
+);
+
+// Resolve student names.
+const studentIds = [...new Set(submissions.map((s: any) => s.student_id))];
+const profiles = studentIds.length
+  ? await restSelect('profiles', `id=in.(${studentIds.join(',')})&select=id,full_name,email`, accessToken)
+  : [];
+const nameById: Record<string, string> = {};
+for (const p of profiles) nameById[p.id] = p.full_name || p.email || 'Student';
+
+const pendingCount = submissions.filter((s: any) => s.ai_status === 'pending').length;
+const isAiTask = assignment.type === 'ai-task';
+---
+
+<BaseLayout title={`${assignment.title} — Teacher`} description="Assignment submissions">
+  <Nav />
+
+  <section class="px-4 py-12 sm:px-6 border-b border-white/8">
+    <div class="mx-auto max-w-5xl">
+      <div class="flex items-center gap-3 mb-4">
+        <a href={`/teacher/digital-futures/class/${assignment.class_id}`} class="text-slate-400 hover:text-white transition-colors">← Back to Class</a>
+      </div>
+      <span class="rounded-full px-3 py-1 text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 capitalize">
+        {isAiTask ? 'AI Task' : assignment.type}
+      </span>
+      <h1 class="text-3xl font-black text-white mt-3">{assignment.title}</h1>
+      {assignment.instructions && <p class="text-slate-400 mt-2">{assignment.instructions}</p>}
+    </div>
+  </section>
+
+  <section class="px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-5xl space-y-6">
+
+      {isAiTask && (
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h2 class="font-bold text-white mb-1">Teacher-mediated AI</h2>
+          <p class="text-sm text-slate-400 mb-4">
+            Students submitted their work and prompt. Click below to run every <strong>pending</strong> submission through the AI under your account. Responses appear in the table and on each student's page. Students never call the AI directly.
+          </p>
+          <RunAiButton client:load assignmentId={assignment.id} pendingCount={pendingCount} />
+        </div>
+      )}
+
+      <div>
+        <h2 class="text-xl font-black text-white mb-4">Submissions ({submissions.length})</h2>
+
+        {submissions.length === 0 ? (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-slate-400">
+            No submissions yet.
+          </div>
+        ) : (
+          <div class="space-y-4">
+            {submissions.map((s: any) => (
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-bold text-white">{nameById[s.student_id] ?? 'Student'}</span>
+                  {assignment.type === 'quiz' ? (
+                    <span class={`text-sm font-bold ${s.score >= 70 ? 'text-green-400' : s.score >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                      {s.score != null ? `${s.score}%` : '—'}
+                    </span>
+                  ) : (
+                    <span class={`text-xs font-bold px-2 py-0.5 rounded-full border capitalize ${
+                      s.ai_status === 'done' ? 'text-green-400 border-green-400/30 bg-green-400/10' :
+                      s.ai_status === 'pending' ? 'text-amber-400 border-amber-400/30 bg-amber-400/10' :
+                      s.ai_status === 'error' ? 'text-red-400 border-red-400/30 bg-red-400/10' :
+                      'text-slate-400 border-white/10'}`}>
+                      {s.ai_status}
+                    </span>
+                  )}
+                </div>
+
+                {isAiTask && (
+                  <div class="grid gap-3 sm:grid-cols-3 text-sm">
+                    <div>
+                      <div class="text-xs font-bold text-slate-500 uppercase mb-1">Prompt</div>
+                      <p class="text-slate-300 whitespace-pre-wrap">{s.prompt_text || '—'}</p>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-slate-500 uppercase mb-1">Work</div>
+                      <p class="text-slate-300 whitespace-pre-wrap">{s.work_text || '—'}</p>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-slate-500 uppercase mb-1">AI response</div>
+                      <p class="text-slate-300 whitespace-pre-wrap">{s.ai_response || '—'}</p>
+                    </div>
+                  </div>
+                )}
+
+                {assignment.type === 'work' && (
+                  <div class="text-sm">
+                    <div class="text-xs font-bold text-slate-500 uppercase mb-1">Work</div>
+                    <p class="text-slate-300 whitespace-pre-wrap">{s.work_text || '—'}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

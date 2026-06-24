@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import { getUser, getProfile } from '../lib/supabase';
+import { getUser, getProfile, restSelect } from '../lib/supabase';
 import { COURSES } from '../data/courses';
 
 const { user, client: supabase } = await getUser(Astro.request, Astro.cookies);
@@ -24,6 +24,19 @@ const displayName = profile?.full_name || user.email?.split('@')[0] || 'Student'
 const accessibleCourses = COURSES;
 const dfCourses = accessibleCourses.filter(c => c.category === 'Digital Futures');
 const csCourses = accessibleCourses.filter(c => c.category === 'Computer Science');
+
+// My assignments — from the classes this student is enrolled in.
+const myClasses = await restSelect('class_students', `student_id=eq.${user.id}&select=class_id`, accessToken);
+const myClassIds = myClasses.map((c: any) => c.class_id);
+const myAssignments = myClassIds.length
+  ? await restSelect('assignments', `class_id=in.(${myClassIds.join(',')})&select=id,type,title,due_date&order=created_at.desc`, accessToken)
+  : [];
+const myAssignmentIds = myAssignments.map((a: any) => a.id);
+const mySubs = myAssignmentIds.length
+  ? await restSelect('submissions', `assignment_id=in.(${myAssignmentIds.join(',')})&student_id=eq.${user.id}&select=assignment_id,score,ai_status`, accessToken)
+  : [];
+const subByAssignment: Record<string, any> = {};
+for (const s of mySubs) subByAssignment[s.assignment_id] = s;
 ---
 
 <BaseLayout
@@ -52,6 +65,40 @@ const csCourses = accessibleCourses.filter(c => c.category === 'Computer Science
           <p class="text-slate-400 text-sm">Courses Available</p>
         </div>
       </div>
+
+      <!-- My Assignments -->
+      {myAssignments.length > 0 && (
+        <div class="mb-12">
+          <h2 class="text-2xl font-black text-white mb-6 flex items-center gap-2">📌 My Assignments</h2>
+          <div class="grid gap-4 sm:grid-cols-2">
+            {myAssignments.map((a: any) => {
+              const sub = subByAssignment[a.id];
+              return (
+                <a href={`/digital-futures/assignment/${a.id}`}
+                   class="rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 hover:border-cyan-500/40 transition-all">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="rounded-full px-2.5 py-0.5 text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 capitalize">
+                      {a.type === 'ai-task' ? 'AI Task' : a.type}
+                    </span>
+                    {a.type === 'quiz' && sub?.score != null && (
+                      <span class="text-xs font-bold text-green-400">{sub.score}%</span>
+                    )}
+                    {a.type === 'ai-task' && sub?.ai_status === 'done' && (
+                      <span class="text-xs font-bold text-green-400">AI ready</span>
+                    )}
+                    {a.type === 'ai-task' && (sub?.ai_status === 'pending' || sub?.ai_status === 'processing') && (
+                      <span class="text-xs font-bold text-amber-400">Waiting for teacher</span>
+                    )}
+                    {!sub && <span class="text-xs font-bold text-cyan-400">Not started</span>}
+                  </div>
+                  <h3 class="font-bold text-white">{a.title}</h3>
+                  {a.due_date && <p class="text-xs text-slate-500 mt-1">Due: {new Date(a.due_date).toLocaleDateString()}</p>}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <!-- Digital Futures -->
       {dfCourses.length > 0 && (

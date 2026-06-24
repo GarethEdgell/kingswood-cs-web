@@ -44,7 +44,37 @@ export interface StudentProgress {
   last_accessed: string;
 }
 
+export interface Assignment {
+  id: string;
+  class_id: string;
+  teacher_id: string;
+  type: 'quiz' | 'ai-task' | 'work';
+  lesson_id?: string;
+  quiz_id?: string;
+  title: string;
+  instructions?: string;
+  prompt_guidance?: string; // shown to students for ai-task
+  ai_system_prompt?: string; // teacher-controlled system prompt for the AI runner
+  due_date?: string;
+  created_at: string;
+}
+
+export interface Submission {
+  id: string;
+  assignment_id: string;
+  student_id: string;
+  work_text?: string;
+  prompt_text?: string;
+  quiz_answers?: Record<string, number>;
+  score?: number;
+  ai_response?: string;
+  ai_status: 'none' | 'pending' | 'processing' | 'done' | 'error';
+  submitted_at: string;
+  updated_at: string;
+}
+
 // SQL for creating tables (reference for Supabase setup)
+// NOTE: assignments & submissions tables live in SUPABASE_ASSIGNMENTS.sql
 export const SQL_CREATE_TABLES = `
 -- Profiles (extends auth.users)
 CREATE TABLE profiles (
