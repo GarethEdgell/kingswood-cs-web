@@ -71,7 +71,7 @@
     <div class="grid gap-4 sm:grid-cols-2">
       <div>
         <label class="block text-xs font-bold text-slate-400 mb-1" for="type">Type</label>
-        <select id="type" bind:value={type} class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white">
+        <select id="type" bind:value={type} class="w-full rounded-lg border border-white/10 bg-[var(--input-bg)] p-2 text-sm text-white">
           <option value="quiz">Quiz (auto-graded)</option>
           <option value="ai-task">AI Task (teacher-run AI)</option>
           <option value="work">Work submission (no AI)</option>
@@ -79,7 +79,7 @@
       </div>
       <div>
         <label class="block text-xs font-bold text-slate-400 mb-1" for="lesson">Lesson</label>
-        <select id="lesson" bind:value={lessonId} class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white">
+        <select id="lesson" bind:value={lessonId} class="w-full rounded-lg border border-white/10 bg-[var(--input-bg)] p-2 text-sm text-white">
           {#each lessons as l}
             <option value={l.id}>Y{l.year} · {l.title}{l.hasQuiz ? '' : ' (no quiz)'}</option>
           {/each}
@@ -90,13 +90,13 @@
     <div>
       <label class="block text-xs font-bold text-slate-400 mb-1" for="title">Title</label>
       <input id="title" bind:value={title} on:input={() => (titleEdited = true)}
-        class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white" />
+        class="w-full rounded-lg border border-white/10 bg-[var(--input-bg)] p-2 text-sm text-white" />
     </div>
 
     <div>
       <label class="block text-xs font-bold text-slate-400 mb-1" for="instructions">Instructions (shown to students)</label>
       <textarea id="instructions" bind:value={instructions} rows="2"
-        class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white"></textarea>
+        class="w-full rounded-lg border border-white/10 bg-[var(--input-bg)] p-2 text-sm text-white"></textarea>
     </div>
 
     {#if type === 'ai-task'}
@@ -104,19 +104,19 @@
         <label class="block text-xs font-bold text-slate-400 mb-1" for="guidance">Prompt guidance (helps students write their prompt)</label>
         <textarea id="guidance" bind:value={promptGuidance} rows="2"
           placeholder="e.g. Ask the AI to act as a GCSE English teacher and give 3 specific improvements."
-          class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white"></textarea>
+          class="w-full rounded-lg border border-white/10 bg-[var(--input-bg)] p-2 text-sm text-white"></textarea>
       </div>
       <div>
         <label class="block text-xs font-bold text-slate-400 mb-1" for="system">AI system prompt (controls how the AI responds for the whole class)</label>
         <textarea id="system" bind:value={aiSystemPrompt} rows="3"
-          class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white"></textarea>
+          class="w-full rounded-lg border border-white/10 bg-[var(--input-bg)] p-2 text-sm text-white"></textarea>
       </div>
     {/if}
 
     <div>
       <label class="block text-xs font-bold text-slate-400 mb-1" for="due">Due date (optional)</label>
       <input id="due" type="datetime-local" bind:value={dueDate}
-        class="rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white" />
+        class="rounded-lg border border-white/10 bg-[var(--input-bg)] p-2 text-sm text-white" />
     </div>
 
     {#if quizMissing}
