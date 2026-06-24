@@ -35,16 +35,16 @@ const dfCourses = getCoursesByCategory('Digital Futures');
       Kingswood CS
     </a>
 
-    <!-- Desktop links -->
-    <ul class="hidden items-center gap-0.5 md:flex">
+    <!-- Primary links (desktop row / mobile column) -->
+    <ul id="primaryNav" class="nav-links hidden items-center gap-0.5 md:flex">
 
       <!-- Digital Futures dropdown -->
-      <li class="relative group">
-        <button class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/digital-futures') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+      <li class="nav-dropdown relative">
+        <button type="button" data-dropdown-toggle aria-haspopup="true" aria-expanded="false" class={`w-full rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/digital-futures') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
           Digital Futures
-          <svg class="w-3 h-3 opacity-60 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          <svg class="nav-chevron w-3 h-3 opacity-60 transition-transform ml-auto md:ml-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
         </button>
-        <div class="absolute left-0 top-full mt-1 w-56 rounded-xl border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-2" style="background:var(--bg-card)">
+        <div class="nav-dropdown-panel absolute left-0 top-full w-56 rounded-xl border border-white/10 shadow-xl z-50 py-2" style="background:var(--bg-card)">
           <a href="/digital-futures" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors">
             <span>🏠</span><span>Overview</span>
           </a>
@@ -59,12 +59,12 @@ const dfCourses = getCoursesByCategory('Digital Futures');
       </li>
 
       <!-- GCSE dropdown -->
-      <li class="relative group">
-        <button class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/revision/ocr-gcse') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+      <li class="nav-dropdown relative">
+        <button type="button" data-dropdown-toggle aria-haspopup="true" aria-expanded="false" class={`w-full rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/revision/ocr-gcse') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
           GCSE
-          <svg class="w-3 h-3 opacity-60 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          <svg class="nav-chevron w-3 h-3 opacity-60 transition-transform ml-auto md:ml-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
         </button>
-        <div class="absolute left-0 top-full mt-1 w-64 rounded-xl border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-2" style="background:var(--bg-card)">
+        <div class="nav-dropdown-panel absolute left-0 top-full w-64 rounded-xl border border-white/10 shadow-xl z-50 py-2" style="background:var(--bg-card)">
           <a href="/revision/ocr-gcse-computer-science" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm font-semibold text-cyan-400 hover:bg-white/8 hover:text-white transition-colors">
             <span>🎯</span><span>All GCSE Topics</span>
           </a>
@@ -91,12 +91,12 @@ const dfCourses = getCoursesByCategory('Digital Futures');
       </li>
 
       <!-- A Level dropdown -->
-      <li class="relative group">
-        <button class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/revision/ocr-alevel') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+      <li class="nav-dropdown relative">
+        <button type="button" data-dropdown-toggle aria-haspopup="true" aria-expanded="false" class={`w-full rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/revision/ocr-alevel') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
           A Level
-          <svg class="w-3 h-3 opacity-60 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          <svg class="nav-chevron w-3 h-3 opacity-60 transition-transform ml-auto md:ml-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
         </button>
-        <div class="absolute left-0 top-full mt-1 w-64 rounded-xl border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-2" style="background:var(--bg-card)">
+        <div class="nav-dropdown-panel absolute left-0 top-full w-64 rounded-xl border border-white/10 shadow-xl z-50 py-2" style="background:var(--bg-card)">
           <a href="/revision/ocr-a-level-computer-science" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm font-semibold text-purple-400 hover:bg-white/8 hover:text-white transition-colors">
             <span>🎯</span><span>All A Level Topics</span>
           </a>
@@ -119,12 +119,12 @@ const dfCourses = getCoursesByCategory('Digital Futures');
       </li>
 
       <!-- Tools dropdown -->
-      <li class="relative group">
-        <button class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/tools') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+      <li class="nav-dropdown relative">
+        <button type="button" data-dropdown-toggle aria-haspopup="true" aria-expanded="false" class={`w-full rounded-md px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1 ${isActive('/tools') ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
           Tools
-          <svg class="w-3 h-3 opacity-60 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          <svg class="nav-chevron w-3 h-3 opacity-60 transition-transform ml-auto md:ml-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
         </button>
-        <div class="absolute left-0 top-full mt-1 w-56 rounded-xl border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-2" style="background:var(--bg-card)">
+        <div class="nav-dropdown-panel absolute left-0 top-full w-56 rounded-xl border border-white/10 shadow-xl z-50 py-2" style="background:var(--bg-card)">
           <a href="/tools/data-representation" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔢</span><span>Data Representation</span></a>
           <a href="/tools/logic-gates" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>⚡</span><span>Logic Gates</span></a>
           <a href="/tools/algorithms" class="flex items-center gap-2.5 rounded-lg mx-1 px-3 py-2 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition-colors"><span>🔃</span><span>Algorithm Visualiser</span></a>
@@ -138,13 +138,32 @@ const dfCourses = getCoursesByCategory('Digital Futures');
         </div>
       </li>
 
+      <!-- Mobile-only auth links (shown inside the hamburger menu) -->
+      <li class="nav-mobile-auth md:hidden mt-2 pt-2 border-t border-white/8 flex flex-col gap-1">
+        {user ? (
+          <>
+            {isTeacher && <a href="/teacher/digital-futures" class="rounded-md px-3 py-2 text-sm font-semibold text-cyan-400 hover:bg-white/8">🏫 Teacher</a>}
+            <a href="/dashboard" class="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-white/8 hover:text-white">Dashboard</a>
+            <form method="POST" action="/auth/signout">
+              <button type="submit" class="w-full text-left rounded-md px-3 py-2 text-sm font-semibold text-white hover:bg-white/8">Sign out</button>
+            </form>
+          </>
+        ) : (
+          <>
+            <a href="/login" class="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-white/8 hover:text-white">Log in</a>
+            <a href="/signup" class="rounded-md px-3 py-2 text-sm font-bold text-cyan-400 hover:bg-white/8">Sign up</a>
+          </>
+        )}
+      </li>
+
     </ul>
 
-    <!-- Auth buttons -->
+    <!-- Auth buttons (desktop) -->
     <div class="hidden items-center gap-2 md:flex">
       <!-- Theme toggle -->
       <button
         id="themeToggle"
+        type="button"
         aria-label="Toggle light/dark mode"
         class="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-white/10 transition-colors text-sm"
       >☀️</button>
@@ -165,29 +184,154 @@ const dfCourses = getCoursesByCategory('Digital Futures');
     </div>
 
     <!-- Mobile menu button -->
-    <button class="md:hidden flex items-center gap-2 text-slate-400 hover:text-white">
+    <button id="mobileToggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primaryNav" class="md:hidden flex items-center text-2xl leading-none text-slate-300 hover:text-white">
       ☰
     </button>
   </nav>
 </header>
 
-<script is:inline>
-  (function() {
-    const btn = document.getElementById('themeToggle');
-    if (!btn) return;
+<style>
+  /* Dropdown visibility is driven solely by the `.open` class on .nav-dropdown
+     (toggled by JS). No CSS :hover controls visibility — that is what caused
+     touch devices to see nothing, and mixing it with JS caused the double-click. */
+  .nav-dropdown-panel {
+    display: none;
+  }
+  .nav-dropdown.open > .nav-dropdown-panel {
+    display: block;
+  }
+  .nav-dropdown.open > button .nav-chevron {
+    transform: rotate(180deg);
+  }
 
-    function applyTheme(light) {
-      document.documentElement.classList.toggle('light', light);
-      btn.textContent = light ? '🌙' : '☀️';
-      try { localStorage.setItem('theme', light ? 'light' : 'dark'); } catch(e) {}
+  /* ── Mobile (< md): the primary nav becomes a dropdown column ──────────── */
+  @media (max-width: 767px) {
+    #primaryNav.mobile-open {
+      display: flex !important;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.125rem;
+      padding: 0.5rem;
+      max-height: 80vh;
+      overflow-y: auto;
+      background: var(--nav-bg, #050a14);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    #primaryNav.mobile-open .nav-dropdown { position: static; width: 100%; }
+    /* On mobile the panel expands inline (accordion) rather than floating.
+       A plain display toggle is used here — reliable, no transition timing or
+       clipping quirks. */
+    #primaryNav.mobile-open .nav-dropdown-panel {
+      position: static;
+      width: 100%;
+      margin: 0;
+      border: none;
+      box-shadow: none;
+      border-radius: 0;
+      transform: none;
+      opacity: 1;
+      visibility: visible;
+      display: none;
+      max-height: none;
+      padding: 0.25rem 0;
+      pointer-events: auto;
+    }
+    #primaryNav.mobile-open .nav-dropdown.open > .nav-dropdown-panel {
+      display: block;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    // ── Theme toggle ──────────────────────────────────────────────────────
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+      const setIcon = () => {
+        themeBtn.textContent = document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+      };
+      setIcon();
+      themeBtn.addEventListener('click', () => {
+        const light = !document.documentElement.classList.contains('light');
+        document.documentElement.classList.toggle('light', light);
+        try { localStorage.setItem('theme', light ? 'light' : 'dark'); } catch (e) {}
+        setIcon();
+      });
     }
 
-    // Init button icon
-    const isLight = document.documentElement.classList.contains('light');
-    btn.textContent = isLight ? '🌙' : '☀️';
+    // ── Dropdown menus ────────────────────────────────────────────────────
+    const dropdowns = Array.from(document.querySelectorAll('.nav-dropdown'));
+    // Hover-to-open is a desktop enhancement only. We use Pointer Events and
+    // check pointerType === 'mouse', so a touch tap can NEVER trigger hover —
+    // that is what previously caused the open-then-close "click twice" bug on
+    // touchscreen laptops.
+    const hoverCapable = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    btn.addEventListener('click', () => {
-      applyTheme(!document.documentElement.classList.contains('light'));
+    function setOpen(dropdown, open) {
+      dropdown.classList.toggle('open', open);
+      const btn = dropdown.querySelector('[data-dropdown-toggle]');
+      if (btn) btn.setAttribute('aria-expanded', String(open));
+    }
+
+    function closeAll(except) {
+      dropdowns.forEach((d) => { if (d !== except) setOpen(d, false); });
+    }
+
+    dropdowns.forEach((dropdown) => {
+      const btn = dropdown.querySelector('[data-dropdown-toggle]');
+      if (!btn) return;
+
+      // Click/tap toggles — single action on every device.
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // stops the document handler closing it on the same click
+        const willOpen = !dropdown.classList.contains('open');
+        closeAll(dropdown);
+        setOpen(dropdown, willOpen);
+      });
+
+      if (hoverCapable) {
+        dropdown.addEventListener('pointerenter', (e) => {
+          if (e.pointerType !== 'mouse') return;
+          closeAll(dropdown);
+          setOpen(dropdown, true);
+        });
+        dropdown.addEventListener('pointerleave', (e) => {
+          if (e.pointerType !== 'mouse') return;
+          setOpen(dropdown, false);
+        });
+      }
     });
+
+    // Click anywhere outside closes any open dropdown.
+    document.addEventListener('click', () => closeAll(null));
+    // Escape closes everything.
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(null); });
+
+    // ── Mobile hamburger ──────────────────────────────────────────────────
+    const mobileToggle = document.getElementById('mobileToggle');
+    const primaryNav = document.getElementById('primaryNav');
+    if (mobileToggle && primaryNav) {
+      mobileToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = !primaryNav.classList.contains('mobile-open');
+        primaryNav.classList.toggle('mobile-open', open);
+        mobileToggle.setAttribute('aria-expanded', String(open));
+        if (!open) closeAll(null);
+      });
+      // Tapping outside the menu closes the whole mobile panel.
+      document.addEventListener('click', (e) => {
+        if (primaryNav.classList.contains('mobile-open') &&
+            !primaryNav.contains(e.target) && e.target !== mobileToggle) {
+          primaryNav.classList.remove('mobile-open');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+          closeAll(null);
+        }
+      });
+    }
   })();
 </script>
