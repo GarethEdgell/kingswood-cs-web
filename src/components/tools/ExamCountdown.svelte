@@ -9,7 +9,7 @@
     date: string; // ISO YYYY-MM-DD
   };
 
-  // Summer 2026 exam dates — always verify on your board's official website
+  // Exam dates — OCR confirmed for summer 2027; always verify on your board's official website
   const EXAMS: ExamEntry[] = [
     // AQA GCSE 8525 — both papers now past
     { board: 'AQA', level: 'GCSE', spec: '8525', paper: 'Paper 1 — Computer Systems', date: '2026-05-21' },
@@ -17,12 +17,12 @@
     // AQA A Level 7517 — confirmed dates
     { board: 'AQA', level: 'A Level', spec: '7517', paper: 'Paper 1 — Computer Systems', date: '2026-06-10' },
     { board: 'AQA', level: 'A Level', spec: '7517', paper: 'Paper 2 — Algorithms & Programming', date: '2026-06-17' },
-    // OCR GCSE J277 — both papers now past
-    { board: 'OCR', level: 'GCSE', spec: 'J277', paper: 'Component 01 — Computer Systems', date: '2026-05-18' },
-    { board: 'OCR', level: 'GCSE', spec: 'J277', paper: 'Component 02 — Computational Thinking', date: '2026-05-22' },
-    // OCR A Level H446 — confirmed dates
-    { board: 'OCR', level: 'A Level', spec: 'H446', paper: 'Paper 1 — Computer Systems', date: '2026-06-10' },
-    { board: 'OCR', level: 'A Level', spec: 'H446', paper: 'Paper 2 — Algorithms & Programming', date: '2026-06-17' },
+    // OCR GCSE J277 — summer 2027
+    { board: 'OCR', level: 'GCSE', spec: 'J277', paper: 'Component 01 — Computer Systems', date: '2027-05-10' },
+    { board: 'OCR', level: 'GCSE', spec: 'J277', paper: 'Component 02 — Computational Thinking', date: '2027-05-19' },
+    // OCR A Level H446 — summer 2027
+    { board: 'OCR', level: 'A Level', spec: 'H446', paper: 'Paper 1 — Computer Systems', date: '2027-06-07' },
+    { board: 'OCR', level: 'A Level', spec: 'H446', paper: 'Paper 2 — Algorithms & Programming', date: '2027-06-15' },
     // Cambridge IGCSE 0478 — both papers now past
     { board: 'Cambridge', level: 'IGCSE', spec: '0478', paper: 'Paper 1 — Theory', date: '2026-05-20' },
     { board: 'Cambridge', level: 'IGCSE', spec: '0478', paper: 'Paper 2 — Problem-solving', date: '2026-05-28' },
@@ -37,7 +37,7 @@
   let boards = [...new Set(EXAMS.map(e => e.board))];
   let levels = ['GCSE', 'A Level', 'IGCSE'];
 
-  let selectedBoard = 'AQA';
+  let selectedBoard = 'OCR';
   let selectedLevel = 'GCSE';
   let now = new Date();
   let ticker: ReturnType<typeof setInterval>;
@@ -197,6 +197,6 @@
   </div>
 
   <p class="text-xs text-slate-600">
-    ⚠️ Dates shown are estimates for the 2026 summer series. Always confirm exact dates on your exam board's official website.
+    ⚠️ Always confirm exact dates on your exam board's official website before relying on them.
   </p>
 </div>
