@@ -1,8 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { PYTHON_WORLDS, getAllChallenges, levelFromXP, rankFromLevel, type Challenge, type World } from '../../data/pythonCourse';
+  import { PYTHON_WORLDS, levelFromXP, rankFromLevel, type Challenge, type World } from '../../data/pythonCourse';
 
-  const STORAGE_KEY = 'pyquest-progress';
+  // Course data is injected so this component powers both the GCSE and A Level
+  // quests. Defaults keep the original GCSE page working unchanged.
+  export let worlds: World[] = PYTHON_WORLDS;
+  export let storageKey = 'pyquest-progress';
+  export let masteryNoun = 'every OCR GCSE Python skill';
 
   let completed: Record<string, boolean> = {};
   let xp = 0;
@@ -20,7 +24,7 @@
   let celebrate = false;
   let levelUp = false;
 
-  const allChallenges = getAllChallenges();
+  $: allChallenges = worlds.flatMap(w => w.challenges);
 
   $: lvl = levelFromXP(xp);
   $: rank = rankFromLevel(lvl.level);
@@ -29,20 +33,20 @@
 
   onMount(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
       completed = saved.completed || {};
       xp = saved.xp || 0;
     } catch {}
   });
 
   function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completed, xp })); } catch {}
+    try { localStorage.setItem(storageKey, JSON.stringify({ completed, xp })); } catch {}
   }
 
   function worldUnlocked(index: number): boolean {
     if (index === 0) return true;
     // Unlocked when the previous world is fully complete
-    const prev = PYTHON_WORLDS[index - 1];
+    const prev = worlds[index - 1];
     return prev.challenges.every(c => completed[c.id]);
   }
 
@@ -173,7 +177,7 @@ _bi.input = _pq_input
     const idx = allChallenges.findIndex(c => c.id === activeChallenge!.id);
     const next = allChallenges[idx + 1];
     if (next) {
-      const w = PYTHON_WORLDS.find(world => world.challenges.some(c => c.id === next.id))!;
+      const w = worlds.find(world => world.challenges.some(c => c.id === next.id))!;
       openChallenge(w, next);
     } else {
       closeChallenge();
@@ -228,7 +232,7 @@ _bi.input = _pq_input
   {#if !activeChallenge}
     <!-- ══════════ WORLD MAP ══════════ -->
     <div class="space-y-6">
-      {#each PYTHON_WORLDS as world, wi}
+      {#each worlds as world, wi}
         {@const unlocked = worldUnlocked(wi)}
         {@const done = world.challenges.filter(c => completed[c.id]).length}
         {@const worldComplete = done === world.challenges.length}
@@ -265,7 +269,7 @@ _bi.input = _pq_input
               {/each}
             </div>
           {:else}
-            <p class="text-sm text-slate-500 text-center py-2">Complete {PYTHON_WORLDS[wi - 1].name} to unlock</p>
+            <p class="text-sm text-slate-500 text-center py-2">Complete {worlds[wi - 1].name} to unlock</p>
           {/if}
         </div>
       {/each}
@@ -275,7 +279,7 @@ _bi.input = _pq_input
       <div class="mt-8 rounded-2xl border border-yellow-500/40 bg-yellow-500/10 p-8 text-center">
         <div class="text-6xl mb-3">🏆</div>
         <h2 class="text-2xl font-black text-white">Quest Complete!</h2>
-        <p class="text-slate-300 mt-1">You've mastered every OCR GCSE Python skill. {rank}, Level {lvl.level}.</p>
+        <p class="text-slate-300 mt-1">You've mastered {masteryNoun}. {rank}, Level {lvl.level}.</p>
       </div>
     {/if}
 
