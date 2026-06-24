@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import CartoonChallenges from '../../components/tools/CartoonChallenges.svelte';
+---
+
+<BaseLayout
+  title="Cartoon CS Challenges — Fun Computer Science Puzzles | Kingswood"
+  description="Fun, colourful tap-to-play Computer Science puzzles. Be the sorting algorithm, guide a robot through a maze, light up logic gates and unscramble algorithms. No typing needed."
+>
+  <Nav />
+
+  <section class="border-b border-white/8 bg-[var(--bg-card)] px-4 py-6 sm:px-6">
+    <div class="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <a href="/tools" class="text-slate-500 hover:text-white transition-colors text-sm">← Tools</a>
+        <span class="text-slate-700">/</span>
+        <span class="text-sm text-slate-300">🎮 Cartoon Challenges</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <div class="mb-6 text-center">
+        <div class="text-5xl mb-2">🎮</div>
+        <h1 class="text-3xl font-extrabold text-white">Cartoon CS Challenges</h1>
+        <p class="mt-2 text-slate-400 max-w-2xl mx-auto">
+          Learn key Computer Science ideas the fun way — sorting, pathfinding, logic gates and
+          algorithms — through colourful tap-to-play puzzles. No typing, works on any device.
+        </p>
+      </div>
+
+      <CartoonChallenges client:load />
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
