@@ -1,0 +1,181 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import BinaryMindReader from '../components/BinaryMindReader.svelte';
+
+const segments = [
+  {
+    time: '0:00', mins: 7, emoji: '🔮', colour: '#7c3aed',
+    title: 'Hook — Read my mind',
+    blurb: 'The computer guesses your secret number. Then the reveal: it was binary all along. Everything a computer does starts with on/off — and you just did it in your head.',
+    talk: 'Big question to open with: “How does a computer store the entire internet, every photo, every song… using only two symbols?”',
+  },
+  {
+    time: '0:07', mins: 5, emoji: '🗺️', colour: '#00d4ff',
+    title: 'The big picture',
+    blurb: 'A Level CS is not “more coding lessons”. It is four huge ideas: the machine underneath, the algorithms that power everything, the data & AI revolution, and the deep theory of what computers can — and can’t — do.',
+    talk: 'A Level is where you stop being a user and start understanding the magic. You’ll build, break, and reason about real systems.',
+  },
+  {
+    time: '0:12', mins: 12, emoji: '🤖', colour: '#06b6d4',
+    title: 'Think like a CPU',
+    blurb: 'Meet the Little Man Computer — a tiny model of a real processor. Load a program, then watch it fetch, decode and execute one instruction at a time. This is literally how the chip in your phone works.',
+    talk: 'Run the “add two numbers” program and step through it. Ask: where is the data? where is the program? (Same memory — that’s the von Neumann idea.)',
+    link: { href: '/tools/lmc', label: 'Open the LMC Simulator' },
+  },
+  {
+    time: '0:24', mins: 12, emoji: '⚡', colour: '#ec4899',
+    title: 'Algorithms race',
+    blurb: 'Why is one method of sorting thousands of times faster than another? Watch bubble sort crawl while merge sort flies — then send a robot through a maze to see how satnavs and games find a path.',
+    talk: 'The race: same data, two algorithms. Efficiency is the whole game at A Level — and the reason Google can search billions of pages in milliseconds.',
+    link: { href: '/tools/algorithms', label: 'Open the Algorithm Visualiser' },
+    link2: { href: '/tools/cartoon-challenges', label: 'Play Maze Bot (pathfinding)' },
+  },
+  {
+    time: '0:36', mins: 8, emoji: '🔌', colour: '#f59e0b',
+    title: 'The logic of everything',
+    blurb: 'Every decision a computer makes is built from three tiny switches: AND, OR and NOT. Wire them together and you can build adding machines, memory… eventually a whole computer.',
+    talk: 'Build a circuit that only lights when two conditions are true. Mind-blower: a modern CPU is billions of these gates etched into silicon.',
+    link: { href: '/tools/logic-gates', label: 'Open the Logic Gate Simulator' },
+  },
+  {
+    time: '0:44', mins: 12, emoji: '🐍', colour: '#34d399',
+    title: 'Code that calls itself',
+    blurb: 'Try a real A Level idea: recursion — a function that calls itself. It feels like magic the first time it works. Crack the factorial challenge in Python Quest, right in your browser.',
+    talk: 'No installs, no setup — write Python, hit run. This is the gamified course you’ll have access to all the way through Year 12 and 13.',
+    link: { href: '/courses/python-alevel', label: 'Open Python Quest: A Level' },
+  },
+  {
+    time: '0:56', mins: 4, emoji: '🚀', colour: '#a78bfa',
+    title: 'See you in September',
+    blurb: 'Recap the four big ideas, take questions, and hand out the summer mission. They came in as users; they’re leaving as people who’ve thought like a processor, raced algorithms, built logic and written recursion — in one hour.',
+    talk: 'End on the future: AI, cyber-security, games, robotics, research — A Level CS is the key to all of it.',
+  },
+];
+---
+
+<BaseLayout
+  title="A Level Computer Science — Taster Lesson | Kingswood"
+  description="An exciting one-hour A Level Computer Science taster lesson for Year 11s: read minds with binary, think like a CPU, race algorithms, build logic circuits and write recursion — all in the browser."
+>
+  <Nav />
+
+  <!-- HERO -->
+  <section class="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 left-1/2 -translate-x-1/2 h-[520px] w-[760px] rounded-full opacity-20"
+           style="background: radial-gradient(circle, #7c3aed 0%, #00d4ff 50%, transparent 70%)"></div>
+    </div>
+    <div class="relative mx-auto max-w-3xl text-center">
+      <div class="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-semibold mb-6"
+           style="border-color:rgba(124,58,237,0.4); background:rgba(124,58,237,0.10); color:#a78bfa">
+        <span class="h-1.5 w-1.5 rounded-full animate-pulse" style="background:#a78bfa"></span>
+        Taster Lesson · For Year 11s starting A Level in September
+      </div>
+      <h1 class="text-4xl sm:text-6xl font-black text-white mb-4 leading-tight">
+        So… how does a computer <span style="background:linear-gradient(135deg,#00d4ff,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">actually think?</span>
+      </h1>
+      <p class="text-lg text-slate-400 mb-6 max-w-2xl mx-auto">
+        One hour. Five mind-bending activities. By the end you'll have read minds with binary, thought like a
+        processor, raced algorithms, built logic circuits and written code that calls itself.
+        Welcome to A Level Computer Science.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3 text-sm">
+        <span class="rounded-lg bg-white/5 border border-white/10 px-3 py-1.5 text-slate-300">⏱️ 60 minutes</span>
+        <span class="rounded-lg bg-white/5 border border-white/10 px-3 py-1.5 text-slate-300">🖐️ Hands-on</span>
+        <span class="rounded-lg bg-white/5 border border-white/10 px-3 py-1.5 text-slate-300">💻 All in the browser</span>
+        <span class="rounded-lg bg-white/5 border border-white/10 px-3 py-1.5 text-slate-300">🎓 OCR H446</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE HOOK (interactive) -->
+  <section class="px-4 pb-4 sm:px-6">
+    <div class="mx-auto max-w-3xl">
+      <div class="mb-3 flex items-center gap-2">
+        <span class="rounded-lg px-2.5 py-1 text-xs font-bold text-white" style="background:#7c3aed">START HERE</span>
+        <span class="text-sm text-slate-400">Try it now — think of a number and let the page read your mind:</span>
+      </div>
+      <BinaryMindReader client:load />
+    </div>
+  </section>
+
+  <!-- LESSON TIMELINE -->
+  <section class="px-4 py-12 sm:px-6">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-black text-white mb-2">The hour, minute by minute</h2>
+      <p class="text-slate-400 mb-8">A ready-to-run plan. Every activity links to a real interactive tool on this site — no installs, no logins.</p>
+
+      <div class="space-y-4">
+        {segments.map(s => (
+          <div class="rounded-2xl border-2 p-5 transition-all hover:scale-[1.01]" style={`border-color:${s.colour}44; background:${s.colour}0a`}>
+            <div class="flex items-start gap-4">
+              <div class="flex flex-col items-center shrink-0">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl text-2xl" style={`background:${s.colour}22; border:2px solid ${s.colour}55`}>{s.emoji}</div>
+                <span class="mt-1 text-xs font-bold" style={`color:${s.colour}`}>{s.time}</span>
+                <span class="text-[10px] text-slate-500">{s.mins} min</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-lg font-black text-white">{s.title}</h3>
+                <p class="mt-1 text-sm text-slate-300 leading-relaxed">{s.blurb}</p>
+                <p class="mt-2 text-sm text-slate-400 leading-relaxed"><span class="font-semibold" style={`color:${s.colour}`}>Teacher:</span> {s.talk}</p>
+                {(s.link || s.link2) && (
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    {s.link && <a href={s.link.href} class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold text-white transition-all hover:opacity-90" style={`background:${s.colour}`}>{s.link.label} →</a>}
+                    {s.link2 && <a href={s.link2.href} class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-bold transition-all hover:bg-white/5" style={`border-color:${s.colour}66; color:${s.colour}`}>{s.link2.label} →</a>}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- MIND-BLOWERS -->
+  <section class="px-4 pb-12 sm:px-6">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-black text-white mb-6">💥 Drop these in when the room goes quiet</h2>
+      <div class="grid gap-3 sm:grid-cols-2">
+        {[
+          'Your phone’s chip performs billions of those AND/OR/NOT operations every single second.',
+          'The same memory holds both the program and its data — an idea from the 1940s your laptop still uses.',
+          'A good algorithm can be millions of times faster than a bad one on the same computer.',
+          'Some problems are provably impossible for any computer to solve — and we can prove it with maths.',
+          'AI image models are, underneath, just very large piles of the maths you’ll meet in Year 12.',
+          'Recursion lets a few lines of code solve a problem that would take pages the long way.',
+        ].map(fact => (
+          <div class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300 leading-relaxed">⚡ {fact}</div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SUMMER MISSION -->
+  <section class="px-4 pb-16 sm:px-6">
+    <div class="mx-auto max-w-3xl">
+      <div class="rounded-2xl border-2 p-6 sm:p-8 text-center" style="border-color:#34d39955; background:#34d39910">
+        <div class="text-5xl mb-3">🎯</div>
+        <h2 class="text-2xl font-black text-white">Your summer mission</h2>
+        <p class="mt-2 text-slate-300 max-w-xl mx-auto">
+          Turn up in September having beaten <strong>one full world</strong> of Python Quest. It's free, it's gamified,
+          and it runs in your browser. Get a head start and you'll fly through the first term.
+        </p>
+        <div class="mt-5 flex flex-wrap justify-center gap-3">
+          <a href="/courses/python-alevel" class="rounded-xl px-6 py-3 font-bold text-white transition-all hover:opacity-90" style="background:linear-gradient(135deg,#34d399,#06b6d4)">🐍 Start Python Quest</a>
+          <a href="/tools/cartoon-challenges" class="rounded-xl border border-white/15 px-6 py-3 font-bold text-slate-200 transition-all hover:bg-white/5">🎮 Or warm up with the puzzles</a>
+        </div>
+        <p class="mt-5 text-sm text-slate-500">Can't wait to see you in Year 12. It's going to be brilliant. 🚀</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  .animate-pulse { animation: pulse 2s ease-in-out infinite; }
+</style>
