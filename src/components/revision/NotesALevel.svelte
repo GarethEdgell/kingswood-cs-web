@@ -35,6 +35,16 @@
   // Expanded topics in sidebar
   let expandedTopics: Set<string> = new Set();
 
+  // Sidebar search / filter
+  let query = '';
+  $: q = query.trim().toLowerCase();
+  $: sidebarTopics = (activeBoard?.topics ?? []).map(topic => ({
+    topic,
+    points: q
+      ? topic.specPoints.filter(sp => `${sp.id} ${sp.title}`.toLowerCase().includes(q))
+      : topic.specPoints,
+  })).filter(x => x.points.length > 0);
+
   function selectBoard(id: string) {
     activeBoardId = id;
     const board = boards.find(b => b.id === id);
@@ -127,15 +137,32 @@
   ">
     <div class="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto rounded-xl border border-white/8 bg-[var(--bg-card)] p-3">
 
+      <!-- Search / filter -->
+      <div class="relative mb-3">
+        <input
+          bind:value={query}
+          placeholder="Search spec points…"
+          class="w-full rounded-lg border border-white/10 bg-black/20 pl-8 pr-7 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#6c8cff]/50"
+        />
+        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm">🔍</span>
+        {#if query}
+          <button on:click={() => query = ''} class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-sm" aria-label="Clear search">✕</button>
+        {/if}
+      </div>
+
       {#if activeBoard}
-        {#each activeBoard.topics as topic}
+        {#if sidebarTopics.length === 0}
+          <p class="px-3 py-4 text-sm text-slate-500 text-center">No spec points match “{query}”.</p>
+        {/if}
+        {#each sidebarTopics as { topic, points }}
+          {@const isExpanded = q !== '' || expandedTopics.has(topic.id)}
           <!-- Topic header -->
           <button
             on:click={() => toggleTopic(topic.id)}
             class="w-full flex items-center gap-2 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-white/5
               {activeTopicId === topic.id ? 'text-white' : 'text-slate-400'}"
           >
-            <span class="text-xs transition-transform {expandedTopics.has(topic.id) ? 'rotate-90' : ''} inline-block">▶</span>
+            <span class="text-xs transition-transform {isExpanded ? 'rotate-90' : ''} inline-block">▶</span>
             <div class="flex-1 min-w-0">
               <div class="text-xs font-bold text-[#6c8cff]">{topic.number}</div>
               <div class="text-sm font-medium leading-tight truncate">{topic.name}</div>
@@ -143,9 +170,9 @@
           </button>
 
           <!-- Spec points -->
-          {#if expandedTopics.has(topic.id)}
+          {#if isExpanded}
             <div class="ml-4 mb-1 border-l border-white/8 pl-2 space-y-0.5">
-              {#each topic.specPoints as sp}
+              {#each points as sp}
                 <button
                   on:click={() => selectSpecPoint(topic.id, sp.id)}
                   class="w-full text-left rounded-lg px-2.5 py-1.5 text-xs transition-colors leading-snug
