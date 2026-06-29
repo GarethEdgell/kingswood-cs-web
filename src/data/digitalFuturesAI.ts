@@ -149,17 +149,17 @@ export const AI_TRACKS: AITrack[] = [
     track: 11, name: 'AI & Your Future', tagline: 'Apply AI, stay honest, get ahead', colour: '#7c3aed', emoji: '🚀',
     modules: [
       {
-        id: 'ai11-1', track: 11, num: 1, title: 'AI Without Cheating', emoji: '🎓', colour: '#7c3aed', time: '25 min', badge: '🎓', xp: 25,
-        why: 'AI can supercharge your coursework — or get you disqualified. Know the rules and use it like a pro, not a cheat.',
+        id: 'ai11-1', track: 11, num: 1, title: 'Coursework: Keep It Yours', emoji: '🎓', colour: '#7c3aed', time: '25 min', badge: '🎓', xp: 25,
+        why: 'Coursework and assessed work are how you prove what YOU can do. They must be entirely your own — using AI on them is cheating, and it can cost you your grade.',
         learn: [
-          'Exam boards treat AI-written work handed in as your own as <strong>malpractice</strong>.',
-          'Usually fine: brainstorming, explaining ideas, checking understanding, getting feedback.',
-          'Always check your own school\'s and exam board\'s current policy.',
-          'If you use AI, be able to explain what you did — and acknowledge it where required.',
+          'Exam boards treat AI-generated work handed in as your own as <strong>malpractice</strong> — it can void your qualification.',
+          '<strong>Do not use AI for coursework or assessed work at all</strong> — not to write it, draft it, plan it, or "improve" it. It must be 100% your own.',
+          'Detection aside, the real problem is simple: if a machine does it, <strong>you learn nothing</strong> and the grade isn\'t yours.',
+          'Save AI for the things in this course — learning, practising and exploring — never for the work that actually counts towards a qualification.',
         ],
-        mission: 'Take a piece of your own writing. Ask AI <em>"how could I improve this?"</em> — then YOU make the edits. Note what you changed and why.',
-        challenge: 'Write your own 3-rule "AI honour code" that you\'ll stick to this year.',
-        reflect: 'How do you get the benefit of AI while keeping the work genuinely yours?',
+        mission: 'Pick a real piece of coursework or an assignment you have coming up. Without any AI, break it into 4 steps you\'ll do yourself, list the genuine sources you\'ll use (books, class notes, trusted websites), and write down when you\'ll do each step.',
+        challenge: 'Write your own short "academic honesty" pledge — 3 rules for keeping every piece of assessed work genuinely your own.',
+        reflect: 'Beyond "not getting caught", why does it actually matter that your coursework is your own work?',
       },
       {
         id: 'ai11-2', track: 11, num: 2, title: 'Build Something With AI', emoji: '🏗️', colour: '#00d4ff', time: '30 min', badge: '🏗️', xp: 30,

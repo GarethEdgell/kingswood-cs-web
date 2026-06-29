@@ -11,6 +11,7 @@
 
   let completed: Record<string, boolean> = {};
   let reflections: Record<string, string> = {};
+  let studentName = '';
   let active: AIModule | null = null;
   let activeTrack: AITrack | null = null;
   let celebrate = false;
@@ -25,12 +26,11 @@
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
       completed = saved.completed || {};
       reflections = saved.reflections || {};
+      studentName = saved.name || '';
     } catch {}
   });
-  function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completed, reflections })); } catch {} }
-
-  function trackDone(t: AITrack) { return t.modules.filter(m => completed[m.id]).length; }
-  function trackPct(t: AITrack) { return Math.round((trackDone(t) / t.modules.length) * 100); }
+  function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completed, reflections, name: studentName })); } catch {} }
+  function onName(e: Event) { studentName = (e.target as HTMLInputElement).value; save(); }
 
   function open(track: AITrack, m: AIModule) {
     activeTrack = track; active = m;
@@ -53,6 +53,61 @@
     reflections = { ...reflections, [id]: (e.target as HTMLTextAreaElement).value };
     save();
   }
+
+  // ── Certificate (drawn on a canvas, downloaded as PNG) ────────────────
+  function downloadCertificate(track: AITrack) {
+    const name = (studentName || '').trim();
+    if (!name) { alert('Pop your name in the box at the top first — it goes on your certificate.'); return; }
+    const W = 1200, H = 850, S = 2;
+    const cv = document.createElement('canvas');
+    cv.width = W * S; cv.height = H * S;
+    const ctx = cv.getContext('2d')!;
+    ctx.scale(S, S);
+    const centre = (t: string, y: number, font: string, fill: string) => {
+      ctx.font = font; ctx.fillStyle = fill; ctx.textAlign = 'center'; ctx.fillText(t, W / 2, y);
+    };
+    // background
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+    // gradient border
+    const g = ctx.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, '#00d4ff'); g.addColorStop(1, track.colour);
+    ctx.strokeStyle = g; ctx.lineWidth = 14; ctx.strokeRect(28, 28, W - 56, H - 56);
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 2; ctx.strokeRect(48, 48, W - 96, H - 96);
+    // text
+    centre('KINGSWOOD COMPUTER SCIENCE', 130, '600 22px Arial', '#64748b');
+    centre('Certificate of Completion', 210, '800 56px Georgia, serif', '#0f172a');
+    ctx.fillStyle = track.colour; ctx.fillRect(W / 2 - 70, 240, 140, 5);
+    centre('This certificate is proudly awarded to', 320, '400 24px Arial', '#475569');
+    centre(name, 400, '700 64px Georgia, serif', '#0f172a');
+    centre('for completing the', 470, '400 24px Arial', '#475569');
+    centre(`Digital Futures & AI — Year ${track.track}: ${track.name}`, 520, '700 32px Arial', track.colour);
+    const xp = track.modules.reduce((s, m) => s + m.xp, 0);
+    centre(`${track.modules.length} modules completed · ${xp} XP earned`, 565, '400 22px Arial', '#64748b');
+    // badges row
+    ctx.font = '46px Arial'; ctx.textAlign = 'center';
+    const badges = track.modules.map(m => m.badge);
+    const gap = 70, startX = W / 2 - ((badges.length - 1) * gap) / 2;
+    badges.forEach((b, i) => ctx.fillText(b, startX + i * gap, 670));
+    // footer
+    const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    ctx.font = '400 20px Arial'; ctx.fillStyle = '#64748b';
+    ctx.textAlign = 'left'; ctx.fillText(date, 90, 770);
+    ctx.textAlign = 'right'; ctx.fillText('kingswoodcomputerscience.com', W - 90, 770);
+    // seal
+    ctx.beginPath(); ctx.arc(W - 150, 250, 52, 0, Math.PI * 2); ctx.fillStyle = track.colour + '22'; ctx.fill();
+    ctx.lineWidth = 3; ctx.strokeStyle = track.colour; ctx.stroke();
+    ctx.font = '44px Arial'; ctx.textAlign = 'center'; ctx.fillText('🏆', W - 150, 266);
+
+    cv.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Kingswood-${track.name.replace(/\s+/g, '-')}-Certificate.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+  }
 </script>
 
 {#if celebrate}
@@ -71,19 +126,27 @@
 
   {#if !active}
     <!-- ══════════ OVERVIEW ══════════ -->
-    <div class="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 p-5">
-      <div>
-        <h2 class="text-lg font-black text-white">Your progress</h2>
-        <p class="text-sm text-slate-400">Work through it at your own pace — any module, any order.</p>
+    <div class="mb-6 rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-black text-white">Your progress</h2>
+          <p class="text-sm text-slate-400">Work through it at your own pace — any module, any order.</p>
+        </div>
+        <div class="flex items-center gap-5 text-center">
+          <div><div class="text-2xl font-black" style="color:#00ff94">{doneCount}/{allModules.length}</div><div class="text-xs text-slate-500">modules</div></div>
+          <div><div class="text-2xl font-black" style="color:#f59e0b">{totalXP}</div><div class="text-xs text-slate-500">XP</div></div>
+        </div>
       </div>
-      <div class="flex items-center gap-5 text-center">
-        <div><div class="text-2xl font-black" style="color:#00ff94">{doneCount}/{allModules.length}</div><div class="text-xs text-slate-500">modules</div></div>
-        <div><div class="text-2xl font-black" style="color:#f59e0b">{totalXP}</div><div class="text-xs text-slate-500">XP</div></div>
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <label for="cert-name" class="text-xs font-semibold text-slate-400">Your name (for your certificate):</label>
+        <input id="cert-name" value={studentName} on:input={onName} placeholder="e.g. Alex Taylor" maxlength="40"
+          class="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-white focus:outline-none focus:border-white/30" style="background:var(--input-bg)" />
       </div>
     </div>
 
     {#each AI_TRACKS as track}
-      {@const pct = trackPct(track)}
+      {@const done = track.modules.filter(m => completed[m.id]).length}
+      {@const pct = Math.round((done / track.modules.length) * 100)}
       <div class="mb-8">
         <div class="flex items-center gap-3 mb-3">
           <div class="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl shrink-0" style="background:{track.colour}22; border:2px solid {track.colour}55">{track.emoji}</div>
@@ -98,6 +161,13 @@
         <div class="h-2 rounded-full bg-white/5 overflow-hidden mb-4">
           <div class="h-2 rounded-full transition-all duration-500" style="width:{pct}%; background:{track.colour}"></div>
         </div>
+
+        {#if pct === 100}
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 p-4" style="border-color:{track.colour}55; background:{track.colour}12">
+            <p class="text-sm font-bold text-white">🏆 Track complete — you've earned your certificate!</p>
+            <button on:click={() => downloadCertificate(track)} class="rounded-lg px-4 py-2 text-sm font-bold text-white transition-all hover:opacity-90" style="background:{track.colour}">🎓 Download certificate</button>
+          </div>
+        {/if}
 
         <div class="grid gap-3 sm:grid-cols-2">
           {#each track.modules as m}
