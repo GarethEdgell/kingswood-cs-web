@@ -35,6 +35,10 @@
   // Expanded topics in sidebar
   let expandedTopics: Set<string> = new Set();
 
+  // Exam-practice mark-scheme reveal (reset when the spec point changes)
+  let revealed: Record<number, boolean> = {};
+  $: { activeSpecPointId; revealed = {}; }
+
   // Sidebar search / filter
   let query = '';
   $: q = query.trim().toLowerCase();
@@ -308,6 +312,35 @@
           {/if}
         {/each}
       </div>
+      {/if}
+
+      <!-- Exam practice -->
+      {#if !isLocked && activeSpecPoint.exam && activeSpecPoint.exam.length}
+        <div class="mt-8 pt-6 border-t border-white/8">
+          <h3 class="text-lg font-bold text-white mb-3">📝 Exam practice</h3>
+          <div class="space-y-3">
+            {#each activeSpecPoint.exam as eq, i}
+              <div class="rounded-xl border border-[#fbbf24]/25 bg-[#fbbf24]/5 p-4">
+                <div class="flex justify-between items-start gap-3 mb-1">
+                  <p class="text-sm text-slate-200 font-medium leading-relaxed">{eq.q}</p>
+                  <span class="shrink-0 text-xs font-bold text-[#fbbf24] rounded-full bg-[#fbbf24]/15 px-2 py-0.5">[{eq.marks}]</span>
+                </div>
+                {#if revealed[i]}
+                  <div class="mt-2 rounded-lg bg-[#34d399]/8 border border-[#34d399]/20 p-3">
+                    <div class="text-xs font-semibold uppercase tracking-wider text-[#34d399] mb-1.5">Mark scheme ({eq.marks} mark{eq.marks === 1 ? '' : 's'})</div>
+                    <ul class="space-y-1">
+                      {#each eq.scheme as point}
+                        <li class="text-sm text-slate-300 flex gap-2"><span class="shrink-0 text-[#34d399]">✓</span><span>{@html point}</span></li>
+                      {/each}
+                    </ul>
+                  </div>
+                {:else}
+                  <button on:click={() => revealed = { ...revealed, [i]: true }} class="mt-1 text-xs font-semibold text-[#6c8cff] hover:underline">Reveal mark scheme →</button>
+                {/if}
+              </div>
+            {/each}
+          </div>
+        </div>
       {/if}
 
       <!-- Prev / Next navigation -->

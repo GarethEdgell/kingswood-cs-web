@@ -476,3 +476,63 @@ export const OCR_ALEVEL: ALevelBoard = {
 
   ]
 };
+
+// ── Exam-style practice questions + mark schemes, keyed by spec point ──
+const EXAM: Record<string, { q: string; marks: number; scheme: string[] }[]> = {
+  '1.1.1': [{ q: 'Describe the steps of the FETCH stage of the fetch–decode–execute cycle, naming the registers used.', marks: 4, scheme: [
+    'The address in the PC is copied to the MAR', 'The instruction at that address is fetched from memory into the MDR', 'The instruction is copied from the MDR to the CIR', 'The PC is incremented to point at the next instruction'] }],
+  '1.1.2': [{ q: 'Explain why a RISC processor is often chosen for a mobile phone.', marks: 3, scheme: [
+    'RISC has a small set of simple instructions, each executing in (about) one cycle', 'Lower power consumption, extending battery life', 'Uniform instructions make pipelining easier / more efficient'] }],
+  '1.1.3': [{ q: 'A photographer needs portable storage to carry on location. Recommend a storage type and justify your choice.', marks: 3, scheme: [
+    'Solid-state / flash storage (SSD)', 'No moving parts, so it is durable / shock-resistant when carried around', 'Fast transfer rate and low power consumption'] }],
+  '1.2.1': [{ q: 'Explain how the processor handles an interrupt.', marks: 4, scheme: [
+    'The interrupt register is checked at the end of each FDE cycle', 'If a pending interrupt has higher priority, the current registers/state are pushed onto the stack', 'The matching Interrupt Service Routine (ISR) is located and executed', 'The saved state is popped from the stack and normal processing resumes'] }],
+  '1.2.2': [{ q: 'Compare a compiler and an interpreter.', marks: 4, scheme: [
+    'A compiler translates the whole program at once; an interpreter translates and runs one statement at a time', 'A compiler produces a standalone executable; an interpreter does not', 'A compiler reports all errors after compilation; an interpreter stops at the first error', 'Compiled code runs faster; an interpreter is more convenient for testing/debugging'] }],
+  '1.2.3': [{ q: 'A company is building software whose requirements are likely to change during development. Recommend a methodology and justify it.', marks: 3, scheme: [
+    'Agile (e.g. Scrum)', 'Iterative sprints allow requirements to change without restarting', 'Continuous customer feedback ensures the right product is built'] }],
+  '1.2.4': [{ q: 'Explain the difference between immediate addressing and direct addressing.', marks: 2, scheme: [
+    'Immediate: the operand is the actual value to be used', 'Direct: the operand is the memory address where the value is stored'] }],
+  '1.3.1': [{ q: 'Explain why HTTPS uses both asymmetric and symmetric encryption.', marks: 4, scheme: [
+    'Asymmetric encryption is used during the handshake to exchange a symmetric session key', 'This works securely without any pre-shared secret', 'Asymmetric encryption is slow, so it is not used for the bulk data', 'The fast symmetric session key then encrypts all the actual data transferred'] }],
+  '1.3.2': [{ q: 'State what is meant by referential integrity and explain why it is important.', marks: 2, scheme: [
+    'Every foreign key value must match an existing primary key in the related table', 'It prevents orphaned records that reference data which does not exist'] }],
+  '1.3.3': [{ q: 'Give two advantages of packet switching over circuit switching.', marks: 2, scheme: [
+    'Efficient use of the network — links are shared between many communications rather than reserved', 'Resilient — if a link fails, packets are rerouted along another path'] }],
+  '1.3.4': [{ q: 'Explain why input validation should be carried out on both the client and the server.', marks: 3, scheme: [
+    'Client-side gives the user instant feedback and reduces server load', 'Client-side checks can be bypassed (JavaScript disabled or the request edited)', 'Server-side validation guarantees the data is always checked / keeps the system secure'] }],
+  '1.4.1': [{ q: 'Convert the denary value -45 to 8-bit two’s complement. Show your working.', marks: 3, scheme: [
+    '+45 in binary = 0010 1101', 'Invert all the bits → 1101 0010', 'Add 1 → 1101 0011'] }],
+  '1.4.2': [{ q: 'Describe how a stack handles the push and pop operations, including one error condition.', marks: 4, scheme: [
+    'push adds an item to the top and increments the top/stack pointer', 'pop removes and returns the item from the top and decrements the pointer', 'A stack is Last-In-First-Out (LIFO)', 'Overflow occurs if push is attempted when full (or underflow if pop is attempted when empty)'] }],
+  '1.4.3': [{ q: 'Simplify A.B + A.(NOT B), showing each step and naming the law used.', marks: 3, scheme: [
+    'A.(B + NOT B)  — distributive law', 'B + NOT B = 1 — complement law', 'A.1 = A — identity law, so the answer is A'] }],
+  '1.5.1': [{ q: 'A student logs into a teacher’s account without permission and changes a grade. State which Act applies and the offence(s) committed.', marks: 3, scheme: [
+    'The Computer Misuse Act 1990', 'Unauthorised access to computer material (section 1)', 'Unauthorised modification of computer material (section 3) / access with intent'] }],
+  '1.5.2': [{ q: 'Discuss one ethical concern of using AI to make hiring decisions.', marks: 4, scheme: [
+    'Identifies the concern of bias / unfair discrimination', 'Explains the mechanism: the AI learns from historical data that may reflect human bias', 'States a consequence: candidates treated unfairly and decisions hard to challenge (black box)', 'Gives a balanced point or mitigation, e.g. human oversight / auditing the model'] }],
+  '2.1.1': [{ q: 'Explain, using an example, what is meant by abstraction.', marks: 3, scheme: [
+    'Removing unnecessary detail from a problem', 'Keeping only the detail relevant to the solution', 'A valid example, e.g. a Tube map shows connections/order but not real distances'] }],
+  '2.1.2': [{ q: 'State what is meant by a precondition and give an example.', marks: 2, scheme: [
+    'A condition that must be true before an algorithm will run / work correctly', 'A valid example, e.g. the list must be sorted before a binary search'] }],
+  '2.1.3': [{ q: 'Give two benefits of decomposing a problem into separate modules.', marks: 2, scheme: [
+    'Different people/teams can work on modules in parallel', 'Modules can be reused and tested individually / are easier to maintain'] }],
+  '2.1.4': [{ q: 'Explain why some tasks cannot benefit from concurrent processing.', marks: 2, scheme: [
+    'The steps are sequential/dependent — each step needs the result of the previous one', 'So they must run in order; parallelism is impossible (and coordination overhead may outweigh any gain)'] }],
+  '2.2.1': [{ q: 'Compare recursion and iteration in terms of memory use.', marks: 3, scheme: [
+    'Recursion stores each unfinished call on the call stack', 'This risks a stack overflow if the recursion is too deep', 'Iteration uses (roughly) constant extra memory, so is more memory-efficient'] }],
+  '2.2.2': [{ q: 'Explain what is meant by polymorphism, using an example.', marks: 3, scheme: [
+    'The same method call behaves differently depending on the object’s class', 'Achieved by overriding an inherited method', 'A valid example, e.g. Dog.speak() returns “Woof” and Cat.speak() returns “Meow”, both called via Animal'] }],
+  '2.2.3': [{ q: 'Explain why a heuristic might be used instead of an exact algorithm.', marks: 2, scheme: [
+    'The exact (optimal) algorithm is intractable / too slow for the size of input', 'A heuristic finds a good-enough solution in an acceptable amount of time'] }],
+  '2.3.1': [{ q: 'State the Big-O time complexity of binary search and justify it.', marks: 2, scheme: [
+    'O(log n)', 'Because it halves the number of items still to be searched at each comparison'] }],
+  '2.3.2': [{ q: 'Explain why binary search cannot be used on the list [4, 1, 7, 3].', marks: 2, scheme: [
+    'The list is not sorted', 'Binary search relies on order to decide which half to discard, so on unsorted data it gives incorrect results'] }],
+  '2.3.3': [{ q: 'Explain why A* usually explores fewer nodes than Dijkstra’s algorithm.', marks: 3, scheme: [
+    'A* uses a heuristic that estimates the remaining cost from a node to the goal', 'It prioritises nodes by f(n) = g(n) + h(n), steering the search towards the goal', 'So it expands fewer nodes, while still finding the optimal path if the heuristic is admissible'] }],
+};
+
+for (const topic of OCR_ALEVEL.topics)
+  for (const sp of topic.specPoints)
+    if (EXAM[sp.id]) sp.exam = EXAM[sp.id];

@@ -11,7 +11,8 @@ export interface Section {
   text?: string;
   headers?: string[]; rows?: string[][];
 }
-export interface SpecPoint { id: string; title: string; examTip?: string; sections: Section[]; }
+export interface ExamQ { q: string; marks: number; scheme: string[]; }
+export interface SpecPoint { id: string; title: string; examTip?: string; sections: Section[]; exam?: ExamQ[]; }
 export interface Topic { id: string; number: string; name: string; specPoints: SpecPoint[]; }
 export interface ALevelBoard { id: string; name: string; topics: Topic[]; }
 
