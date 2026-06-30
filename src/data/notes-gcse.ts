@@ -1635,4 +1635,92 @@ const CAM_IGCSE: ALevelBoard = {
   ]
 };
 
+// ── OCR J277 exam-style practice questions + mark schemes, by spec point ──
+const OCR_GCSE_EXAM: Record<string, { q: string; marks: number; scheme: string[] }[]> = {
+  '1.1.1': [{ q: 'State the purpose of the ALU and the Control Unit (CU) in the CPU.', marks: 2, scheme: [
+    'ALU — performs arithmetic and logical operations', 'CU — manages/coordinates the execution of instructions and the flow of data'] }],
+  '1.1.2': [{ q: 'Describe what happens during the fetch–decode–execute cycle.', marks: 3, scheme: [
+    'Fetch — the next instruction is copied from memory into the CPU', 'Decode — the Control Unit decodes/interprets the instruction', 'Execute — the instruction is carried out (e.g. an ALU calculation)'] }],
+  '1.1.3': [{ q: 'State two factors that affect CPU performance and explain how each one affects it.', marks: 4, scheme: [
+    'Clock speed', 'A higher clock speed means more FDE cycles/instructions per second', 'Cache size (or number of cores)', 'More cache means fewer slow fetches from RAM (or more cores = more instructions run in parallel)'] }],
+  '1.2.1': [{ q: 'Explain the difference between RAM and ROM.', marks: 2, scheme: [
+    'RAM is volatile (loses contents without power), read/write, and holds running programs and data', 'ROM is non-volatile, read-only, and holds the start-up/boot instructions'] }],
+  '1.2.2': [{ q: 'Explain what virtual memory is and when it is used.', marks: 2, scheme: [
+    'Secondary storage used as if it were extra RAM', 'Used when RAM is full / there is not enough RAM for the programs running'] }],
+  '1.2.3': [{ q: 'A laptop manufacturer wants durable, fast storage. Recommend a storage type and justify the choice.', marks: 2, scheme: [
+    'Solid-state storage (SSD/flash)', 'No moving parts so durable/shock-resistant, with fast access and low power use'] }],
+  '1.3.1': [{ q: 'State the difference between a LAN and a WAN.', marks: 2, scheme: [
+    'A LAN covers a small geographical area/single site on owner-controlled infrastructure', 'A WAN covers a large geographical area and uses third-party communication lines'] }],
+  '1.3.2': [{ q: 'Describe a star topology and give one advantage of it.', marks: 2, scheme: [
+    'All devices are connected to a central switch/hub', 'Advantage e.g. if one cable fails only that device is affected (or easy to add devices / good performance)'] }],
+  '1.3.3': [{ q: 'State the purpose of a router and the purpose of a switch.', marks: 2, scheme: [
+    'A router directs data between different networks (e.g. connects a LAN to the internet)', 'A switch connects devices on a LAN and sends data only to the intended device (by MAC address)'] }],
+  '1.3.4': [{ q: 'Give one advantage and one disadvantage of a client–server network compared with peer-to-peer.', marks: 2, scheme: [
+    'Advantage — central management of security/backups/files/updates', 'Disadvantage — expensive (needs a dedicated server) and server failure affects all users'] }],
+  '1.3.5': [{ q: 'Explain the difference between the internet and the World Wide Web.', marks: 2, scheme: [
+    'The internet is the global network of interconnected networks/hardware', 'The World Wide Web is the collection of web pages/sites accessed over the internet'] }],
+  '1.3.6': [{ q: 'State what a protocol is, and name two protocols giving the purpose of each.', marks: 3, scheme: [
+    'A protocol is a set of rules governing communication between devices', 'HTTP/HTTPS — transferring web pages', 'SMTP — sending email (or FTP, TCP, IP, etc.)'] }],
+  '1.3.7': [{ q: 'Describe how data is transmitted across a network using packet switching.', marks: 3, scheme: [
+    'The data is split into packets', 'Each packet is routed independently across the network', 'Packets are reassembled into the correct order at the destination'] }],
+  '1.3.8': [{ q: 'Give one advantage and one disadvantage of a wireless connection compared with a wired one.', marks: 2, scheme: [
+    'Advantage — mobility / no cables / easy to add devices', 'Disadvantage — usually slower / less reliable / less secure / shorter range'] }],
+  '1.4.1': [{ q: 'Describe two different forms of malware.', marks: 4, scheme: [
+    'Virus — attaches to a file and replicates when the file is opened/run', '(second mark for fully describing the virus)', 'Worm — self-replicates across a network without needing a host file (or trojan/ransomware/spyware)', '(second mark for fully describing the second type)'] }],
+  '1.4.2': [{ q: 'State what penetration testing is and why an organisation uses it.', marks: 2, scheme: [
+    'Deliberately attacking/testing a system to find its vulnerabilities', 'So they can be fixed before a real attacker exploits them'] }],
+  '1.4.3': [{ q: 'Describe two methods of preventing network attacks.', marks: 4, scheme: [
+    'Firewall — monitors and filters incoming/outgoing traffic, blocking unauthorised access', '(second mark for fully describing the firewall)', 'Encryption — scrambles data so intercepted data is unreadable (or strong passwords, access levels, anti-malware, MAC filtering)', '(second mark for fully describing the second method)'] }],
+  '1.5.1': [{ q: 'State three functions of an operating system.', marks: 3, scheme: [
+    'Memory management', 'Processor/CPU scheduling (or process management)', 'Peripheral/device management, file management, user management or providing a user interface (any further valid function)'] }],
+  '1.5.2': [{ q: 'Describe the purpose of disk defragmentation software.', marks: 2, scheme: [
+    'It rearranges files so they are stored together in contiguous blocks', 'This reduces read time / speeds up access on a magnetic hard disk'] }],
+  '1.6.1': [{ q: 'State two principles of the Data Protection Act.', marks: 2, scheme: [
+    'Data must be used lawfully and fairly / kept secure', 'Data must be accurate and up to date / used only for the stated purpose / not kept longer than necessary (any two)'] }],
+  '1.6.2': [{ q: 'State two offences under the Computer Misuse Act 1990.', marks: 2, scheme: [
+    'Unauthorised access to computer material', 'Unauthorised access with intent to commit a further offence, or unauthorised modification of computer material'] }],
+  '1.6.3': [{ q: 'Describe one environmental impact of computer technology.', marks: 2, scheme: [
+    'E-waste — discarded devices contain toxic materials and end up in landfill', 'Or: energy consumption of devices/data centres contributes to carbon emissions'] }],
+  '1.6.4': [{ q: 'Explain what is meant by the digital divide.', marks: 2, scheme: [
+    'The gap between those who have access to digital technology and those who do not', 'Caused by factors such as wealth, location or age, disadvantaging access to services/education/jobs'] }],
+  '2.1.1': [{ q: 'Explain what is meant by decomposition and by abstraction.', marks: 2, scheme: [
+    'Decomposition — breaking a problem down into smaller sub-problems', 'Abstraction — removing unnecessary detail, keeping only what is relevant'] }],
+  '2.1.2': [{ q: 'State two ways an algorithm can be represented.', marks: 2, scheme: [
+    'Pseudocode', 'Flowchart'] }],
+  '2.1.3': [{ q: 'Explain why a binary search is usually faster than a linear search on a large list.', marks: 3, scheme: [
+    'Binary search halves the number of items to check at each step', 'Linear search checks each item one at a time from the start', 'So binary needs far fewer comparisons — but the list must first be sorted'] }],
+  '2.1.4': [{ q: 'Describe how one pass of a bubble sort works.', marks: 3, scheme: [
+    'Compare the first two adjacent items', 'Swap them if they are in the wrong order', 'Move along the list comparing each adjacent pair, so the largest value moves to the end'] }],
+  '2.1.5': [{ q: 'State the purpose of a trace table.', marks: 2, scheme: [
+    'To record the value of each variable at every step of an algorithm', 'To check the algorithm works correctly / locate a logic error'] }],
+  '2.2.1': [{ q: 'State the difference between a variable and a constant.', marks: 2, scheme: [
+    'A variable’s value can change while the program runs', 'A constant’s value is set once and cannot change'] }],
+  '2.2.2': [{ q: 'Explain the difference between a FOR loop and a WHILE loop.', marks: 2, scheme: [
+    'A FOR loop is count-controlled — it repeats a set number of times', 'A WHILE loop is condition-controlled — it repeats while a condition is true and may run zero times'] }],
+  '2.2.3': [{ q: 'State the difference between a function and a procedure.', marks: 2, scheme: [
+    'A function returns a value to the part of the program that called it', 'A procedure carries out a task but does not return a value'] }],
+  '2.2.4': [{ q: 'Describe how a one-dimensional array could store a list of test scores.', marks: 2, scheme: [
+    'An array stores multiple values of the same data type under one identifier', 'Each value is accessed by its index, e.g. scores[0] is the first score'] }],
+  '2.3.1': [{ q: 'State what is meant by input validation and give one example of a validation check.', marks: 2, scheme: [
+    'Checking that input is sensible/acceptable before it is processed', 'Example e.g. range check, type check, presence check or length check'] }],
+  '2.3.2': [{ q: 'Explain the difference between normal, boundary and erroneous test data.', marks: 3, scheme: [
+    'Normal — valid data the program should accept', 'Boundary — values on the edge of what is acceptable', 'Erroneous — invalid data the program should reject'] }],
+  '2.4.1': [{ q: 'State when the output of an AND gate is 1, and when the output of an OR gate is 1.', marks: 2, scheme: [
+    'AND — the output is 1 only when both inputs are 1', 'OR — the output is 1 when at least one input is 1'] }],
+  '2.4.2': [{ q: 'State when the output of a NAND gate and the output of an XOR gate are each 1.', marks: 2, scheme: [
+    'NAND — the output is 1 unless both inputs are 1 (i.e. NOT both 1)', 'XOR — the output is 1 when the two inputs are different'] }],
+  '2.4.3': [{ q: 'State De Morgan’s law for NOT(A AND B) and for NOT(A OR B).', marks: 2, scheme: [
+    'NOT(A AND B) = (NOT A) OR (NOT B)', 'NOT(A OR B) = (NOT A) AND (NOT B)'] }],
+  '2.5.1': [{ q: 'Give one advantage and one disadvantage of a high-level language compared with a low-level language.', marks: 2, scheme: [
+    'Advantage — easier to read, write and debug / portable between different machines', 'Disadvantage — must be translated before execution / less direct control over the hardware'] }],
+  '2.5.2': [{ q: 'Describe one difference between a compiler and an interpreter.', marks: 2, scheme: [
+    'A compiler translates the whole program at once and produces an executable', 'An interpreter translates and runs one line at a time and stops at the first error'] }],
+  '2.5.3': [{ q: 'State two features of an IDE that help a programmer write code.', marks: 2, scheme: [
+    'Editor with syntax highlighting / auto-complete / auto-indent', 'Debugging tools — breakpoints, stepping, variable watch (or error diagnostics, run/translate tool)'] }],
+};
+
+for (const topic of OCR_GCSE.topics)
+  for (const sp of topic.specPoints)
+    if (OCR_GCSE_EXAM[sp.id]) sp.exam = OCR_GCSE_EXAM[sp.id];
+
 export const GCSE_NOTES: ALevelBoard[] = [AQA_GCSE, OCR_GCSE, CAM_IGCSE];
