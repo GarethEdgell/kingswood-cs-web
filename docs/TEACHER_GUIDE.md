@@ -35,6 +35,12 @@ anonymous username made of their **class code + a number**.
 | 9E | ic5 | `ic5-1` … `ic5-28` |
 | 9F | ic6 | `ic6-1` … `ic6-28` |
 | 9G | ic7 | `ic7-1` … `ic7-28` |
+| 8A | ic8 | `ic8-1` … `ic8-28` |
+| 8B | ic9 | `ic9-1` … `ic9-28` |
+| 8C | ic10 | `ic10-1` … `ic10-28` |
+| 8D | ic11 | `ic11-1` … `ic11-28` |
+| 8E | ic12 | `ic12-1` … `ic12-28` |
+| 8F | ic13 | `ic13-1` … `ic13-28` |
 
 **To log in:** pupils go to `/login`, type their **username** (e.g. `ic1-3`) and the
 **password** on their login card. They do **not** type an email address.
@@ -84,9 +90,13 @@ This creates all the accounts. Done once by whoever has the Supabase service key
    $env:SUPABASE_SERVICE_KEY="<service_role key>"
    node scripts/seed-school.mjs
    ```
-3. It creates 5 teachers, 7 classes and 28 pupils per class, and writes credential CSVs
-   to the **`credentials/`** folder (git-ignored — never committed).
-4. Print `credentials/ic1-9A.csv` … one card per pupil. Keep `teachers.csv` for staff.
+3. It creates 5 teachers, 13 classes (Year 9 9A–9G and Year 8 8A–8F) and 28 pupils per
+   class, and writes credential CSVs to the **`credentials/`** folder (git-ignored).
+4. Print `credentials/ic1-9A.csv` … `ic13-8F.csv` — one card per pupil. Keep `teachers.csv` for staff.
+
+> Re-running the script only **adds** what's missing; it never changes existing pupils'
+> passwords. So adding a new year group later is just a matter of listing the classes and
+> running it again.
 
 Re-running is safe: existing accounts are left untouched (passwords unchanged). To change
 passwords, use the reset tools in section 4.
