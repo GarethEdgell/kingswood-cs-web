@@ -174,10 +174,10 @@ export async function POST({ request, cookies }: { request: Request; cookies: an
   const { classId } = await request.json();
   if (!classId) return json({ error: 'Missing classId' }, 400);
 
-  // Verify the class belongs to this teacher
-  const classRows = await restSelect('classes', `id=eq.${classId}&teacher_id=eq.${user.id}&select=id,name&limit=1`, accessToken);
+  // Any teacher/admin may generate reports for any class
+  const classRows = await restSelect('classes', `id=eq.${classId}&select=id,name&limit=1`, accessToken);
   const cls = classRows[0];
-  if (!cls) return json({ error: 'Class not found or not your class' }, 404);
+  if (!cls) return json({ error: 'Class not found' }, 404);
 
   // Get students in class
   const classStudents = await restSelect('class_students', `class_id=eq.${classId}&select=student_id`, accessToken);

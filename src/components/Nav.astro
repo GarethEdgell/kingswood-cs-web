@@ -1,22 +1,10 @@
 ---
-import { getUser, getProfile } from '../lib/supabase';
 import { COURSES, getCoursesByCategory } from '../data/courses';
 
 const pathname = Astro.url.pathname;
 
-let user = null;
-let isTeacher = false;
-try {
-  const { user: authUser, client } = await getUser(Astro.request, Astro.cookies);
-  user = authUser ?? null;
-  if (user) {
-    const accessToken = Astro.cookies.get('sb-access-token')?.value;
-    const profile = await getProfile(user.id, client, accessToken);
-    isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
-  }
-} catch (err) {
-  console.log('Nav auth check failed:', err);
-}
+// Auth state is resolved in the browser (see the script below) so it is correct
+// even on statically pre-rendered pages. The frontmatter no longer touches auth.
 
 function isActive(href: string) {
   return pathname === href || (href !== '/' && pathname.startsWith(href));
@@ -160,20 +148,12 @@ const dfCourses = getCoursesByCategory('Digital Futures');
 
       <!-- Mobile-only auth links (shown inside the hamburger menu) -->
       <li class="nav-mobile-auth md:hidden mt-2 pt-2 border-t border-white/8 flex flex-col gap-1">
-        {user ? (
-          <>
-            {isTeacher && <a href="/teacher/digital-futures" class="rounded-md px-3 py-2 text-sm font-semibold text-cyan-400 hover:bg-white/8">🏫 Teacher</a>}
-            <a href="/dashboard" class="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-white/8 hover:text-white">Dashboard</a>
-            <form method="POST" action="/auth/signout">
-              <button type="submit" class="w-full text-left rounded-md px-3 py-2 text-sm font-semibold text-white hover:bg-white/8">Sign out</button>
-            </form>
-          </>
-        ) : (
-          <>
-            <a href="/login" class="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-white/8 hover:text-white">Log in</a>
-            <a href="/signup" class="rounded-md px-3 py-2 text-sm font-bold text-cyan-400 hover:bg-white/8">Sign up</a>
-          </>
-        )}
+        <a href="/teacher/digital-futures" data-auth="teacher" hidden class="rounded-md px-3 py-2 text-sm font-semibold text-cyan-400 hover:bg-white/8">🏫 Teacher</a>
+        <a href="/dashboard" data-auth="in" hidden class="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-white/8 hover:text-white">Dashboard</a>
+        <form method="POST" action="/auth/signout" data-auth="in" hidden>
+          <button type="submit" class="w-full text-left rounded-md px-3 py-2 text-sm font-semibold text-white hover:bg-white/8">Sign out</button>
+        </form>
+        <a href="/login" data-auth="out" hidden class="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-white/8 hover:text-white">Log in</a>
       </li>
 
     </ul>
@@ -187,20 +167,12 @@ const dfCourses = getCoursesByCategory('Digital Futures');
         aria-label="Toggle light/dark mode"
         class="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-slate-400 hover:text-white hover:bg-white/10 transition-colors text-sm"
       >☀️</button>
-      {user ? (
-        <>
-          {isTeacher && <a href="/teacher/digital-futures" class="rounded-md px-3 py-1.5 text-sm font-semibold text-cyan-400 hover:text-white">🏫 Teacher</a>}
-          <a href="/dashboard" class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-white">Dashboard</a>
-          <form method="POST" action="/auth/signout" style="display:inline;">
-            <button type="submit" class="rounded-md border border-white/10 bg-white/5 px-4 py-1.5 text-sm font-semibold text-white hover:bg-white/10">Sign out</button>
-          </form>
-        </>
-      ) : (
-        <>
-          <a href="/login" class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-white">Log in</a>
-          <a href="/signup" class="rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-600 px-4 py-1.5 text-sm font-bold text-black hover:shadow-lg hover:shadow-cyan-500/50 transition-all">Sign up</a>
-        </>
-      )}
+      <a href="/teacher/digital-futures" data-auth="teacher" hidden class="rounded-md px-3 py-1.5 text-sm font-semibold text-cyan-400 hover:text-white">🏫 Teacher</a>
+      <a href="/dashboard" data-auth="in" hidden class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-white">Dashboard</a>
+      <form method="POST" action="/auth/signout" data-auth="in" hidden style="display:inline;">
+        <button type="submit" class="rounded-md border border-white/10 bg-white/5 px-4 py-1.5 text-sm font-semibold text-white hover:bg-white/10">Sign out</button>
+      </form>
+      <a href="/login" data-auth="out" hidden class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-white">Log in</a>
     </div>
 
     <!-- Mobile menu button -->
@@ -268,6 +240,27 @@ const dfCourses = getCoursesByCategory('Digital Futures');
 
 <script is:inline>
   (function () {
+    // ── Auth state (resolved client-side so it's correct on static pages) ──
+    (async function () {
+      const show = (sel, on) => document.querySelectorAll(sel).forEach(el => { el.hidden = !on; });
+      try {
+        const r = await fetch('/api/me', { headers: { 'Accept': 'application/json' } });
+        const d = await r.json();
+        if (d.loggedIn) {
+          show('[data-auth="in"]', true);
+          show('[data-auth="teacher"]', !!d.isTeacher);
+          show('[data-auth="out"]', false);
+        } else {
+          show('[data-auth="out"]', true);
+          show('[data-auth="in"]', false);
+          show('[data-auth="teacher"]', false);
+        }
+      } catch {
+        // On error, fall back to showing the logged-out link
+        show('[data-auth="out"]', true);
+      }
+    })();
+
     // ── Theme toggle ──────────────────────────────────────────────────────
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) {

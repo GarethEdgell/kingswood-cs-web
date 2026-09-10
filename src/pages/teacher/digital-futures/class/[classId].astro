@@ -23,7 +23,7 @@ const { classId } = Astro.params;
 // Fetch class details
 const classRows = await restSelect(
   'classes',
-  `id=eq.${classId}&teacher_id=eq.${user.id}&select=id,name,code,year_group,description&limit=1`,
+  `id=eq.${classId}&select=id,name,code,year_group,description&limit=1`,
   accessToken
 );
 const cls = classRows[0];
