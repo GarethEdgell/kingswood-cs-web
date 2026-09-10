@@ -3,6 +3,8 @@
     { name: '9A', code: 'ic1' }, { name: '9B', code: 'ic2' }, { name: '9C', code: 'ic3' },
     { name: '9D', code: 'ic4' }, { name: '9E', code: 'ic5' }, { name: '9F', code: 'ic6' },
     { name: '9G', code: 'ic7' },
+    { name: '8A', code: 'ic8' }, { name: '8B', code: 'ic9' }, { name: '8C', code: 'ic10' },
+    { name: '8D', code: 'ic11' }, { name: '8E', code: 'ic12' }, { name: '8F', code: 'ic13' },
   ];
 
   let username = '';

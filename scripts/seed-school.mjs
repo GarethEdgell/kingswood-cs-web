@@ -40,6 +40,7 @@ const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
 
 // ── Config ───────────────────────────────────────────────────────────────
 const CLASSES = [
+  // Year 9
   { name: '9A', code: 'ic1', year: 9 },
   { name: '9B', code: 'ic2', year: 9 },
   { name: '9C', code: 'ic3', year: 9 },
@@ -47,6 +48,13 @@ const CLASSES = [
   { name: '9E', code: 'ic5', year: 9 },
   { name: '9F', code: 'ic6', year: 9 },
   { name: '9G', code: 'ic7', year: 9 },
+  // Year 8
+  { name: '8A', code: 'ic8', year: 8 },
+  { name: '8B', code: 'ic9', year: 8 },
+  { name: '8C', code: 'ic10', year: 8 },
+  { name: '8D', code: 'ic11', year: 8 },
+  { name: '8E', code: 'ic12', year: 8 },
+  { name: '8F', code: 'ic13', year: 8 },
 ];
 const STUDENTS_PER_CLASS = 28;
 const TEACHER_COUNT = 5;
