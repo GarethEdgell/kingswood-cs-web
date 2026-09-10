@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import AccountManager from '../../components/teacher/AccountManager.svelte';
+import { getUser, getProfile } from '../../lib/supabase';
+
+const { user } = await getUser(Astro.request, Astro.cookies);
+if (!user) return Astro.redirect('/login');
+
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const profile = await getProfile(user.id, null, accessToken);
+if (profile?.role !== 'teacher' && profile?.role !== 'admin') {
+  return Astro.redirect('/dashboard');
+}
+---
+
+<BaseLayout title="Account & Password Management — Teacher" description="Reset student passwords.">
+  <Nav />
+  <section class="px-4 py-12 sm:px-6 border-b border-white/8">
+    <div class="mx-auto max-w-4xl">
+      <div class="flex items-center gap-2 text-sm text-slate-400 mb-4">
+        <a href="/teacher/digital-futures" class="hover:text-white transition-colors">Teacher Dashboard</a>
+        <span>›</span><span class="text-white">Accounts</span>
+      </div>
+      <h1 class="text-4xl font-black text-white mb-2">🔑 Passwords & Accounts</h1>
+      <p class="text-slate-400">Reset a single pupil's password, or refresh a whole class at once.</p>
+    </div>
+  </section>
+  <section class="px-4 py-10 sm:px-6">
+    <div class="mx-auto max-w-4xl">
+      <AccountManager client:load />
+    </div>
+  </section>
+  <Footer />
+</BaseLayout>

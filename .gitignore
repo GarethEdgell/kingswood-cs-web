@@ -32,3 +32,6 @@ yarn-debug.log*
 # Vercel
 .vercel/
 .output/
+
+# Student/teacher credential exports — never commit
+credentials/

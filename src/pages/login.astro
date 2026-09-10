@@ -17,13 +17,16 @@ import Footer from '../components/Footer.astro';
       <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
         <div class="space-y-4">
           <div>
-            <label for="email" class="block text-sm font-semibold text-slate-300 mb-2">Email</label>
+            <label for="email" class="block text-sm font-semibold text-slate-300 mb-2">Username</label>
             <input
-              type="email"
+              type="text"
               id="email"
+              autocapitalize="none"
+              autocomplete="username"
+              spellcheck="false"
               required
               class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
-              placeholder="name@student.kingswood.edu"
+              placeholder="e.g. ic1-1"
             />
           </div>
 
@@ -47,15 +50,10 @@ import Footer from '../components/Footer.astro';
 
           <div id="error" class="text-red-400 text-sm text-center hidden"></div>
         </div>
-
-        <div class="mt-6 pt-6 border-t border-white/8 text-center">
-          <p class="text-slate-400 text-sm">Don't have an account?</p>
-          <a href="/signup" class="text-cyan-400 hover:text-cyan-300 font-semibold">Sign up →</a>
-        </div>
       </div>
 
       <p class="text-slate-500 text-sm text-center mt-6">
-        Test account: aisha.patel@student.kingswood.edu / Student123!
+        Enter the username and password on your login card. Forgotten it? Ask your teacher.
       </p>
     </div>
   </section>
@@ -107,12 +105,18 @@ import Footer from '../components/Footer.astro';
       errorDiv.textContent = '⏳ Logging in...';
       errorDiv.classList.remove('hidden');
 
-      const email = document.getElementById('email').value;
+      let email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
 
       if (!email || !password) {
-        errorDiv.textContent = 'Please enter email and password';
+        errorDiv.textContent = 'Please enter your username and password';
         return;
+      }
+
+      // Students log in with just a username (e.g. ic1-1). Map it to the
+      // internal anonymised email. Anyone typing a full email is left as-is.
+      if (!email.includes('@')) {
+        email = email.toLowerCase() + '@students.kingswoodcomputerscience.com';
       }
 
       console.log('📧 Attempting login:', email);
